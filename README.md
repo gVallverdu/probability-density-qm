@@ -1,5 +1,7 @@
 # dash-example-NBA
 
+Live demo: https://dash-example-nba.herokuapp.com/
+
 A web app hosted on heroku as an example to learn Dash
 
 Ce dossier contient un exemple basique d'une application Dash. Le code

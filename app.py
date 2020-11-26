@@ -45,7 +45,7 @@ app.layout = html.Div(className="", children=[
         className="header",
         style={"backgroundColor": "#3c6382"},
         children=[html.H2(
-            "TITLE",
+            "Stats on NBA players - Dash app example",
             style={
                 "color": "white",
                 "padding": "30px 0 30px 0",
@@ -96,7 +96,7 @@ app.layout = html.Div(className="", children=[
         className="footer",
         style={"backgroundColor": "#3c6382"},
         children=[html.H2(
-            "FOOTER",
+            "https://github.com/gVallverdu/dash-example-NBA",
             style={
                 "color": "white",
                 "padding": "30px 0 30px 0",
