@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
+from dash_table.Format import Format
 import plotly.express as px
 
 import pandas as pd
@@ -19,9 +20,9 @@ df = pd.read_csv(
 )
 # manage data
 df = df.assign(bmi=df.weight / ((df.height / 100) ** 2))
-df = df.assign(ht_bins=pd.qcut(df.height, q=4))
+df = df.assign(height_bins=pd.qcut(df.height, q=4))
 df = df[["Year", "height", "weight", "bmi",
-         "PER", "PTS", "pos_simple", "ht_bins"]]
+         "PER", "PTS", "pos_simple", "height_bins"]]
 
 
 # Set up app
@@ -39,7 +40,7 @@ server = app.server
 #    * header: at the top, a title
 #    * body: the main containt
 #    * footer: at the bottom, contact, informations, credits
-app.layout = html.Div(className="", children=[
+app.layout = html.Div([
     # ------ header
     html.Div(
         className="header",
@@ -54,7 +55,7 @@ app.layout = html.Div(className="", children=[
     ),
 
     # ----- body
-    html.Div(className="body", children=[
+    html.Div(className="container", children=[
         # a sub title
         html.H3("A plot"),
         # first dropdown selector
@@ -82,13 +83,15 @@ app.layout = html.Div(className="", children=[
         dcc.Dropdown(
             id="pivot-dropdown",
             value="height",
-            options=[{"label": name, "value": name} for name in df.columns],
+            options=[
+                {"label": name, "value": name} 
+                for name in ["Year", "height", "weight", "bmi", "PER", "PTS"]
+            ],
         ),
         # a table for data
         dash_table.DataTable(
             id="pivot-table",
         ),
-        html.Div(id="table")
     ]),
 
     # ----- footer
@@ -130,7 +133,6 @@ def display_graph(xvalue, yvalue):
         category_orders=dict(pos_simple=['PG', 'SG', 'SF', 'PF', 'C']),
         marginal_x="histogram",
         marginal_y="histogram",
-        animation_group="Year",
         template="plotly_white",
     )
 
@@ -146,11 +148,16 @@ def show_pivot_table(value):
     """ This function return a pivot Table """
 
     pivot_df = pd.pivot_table(
-        data=df, values=value, columns="pos_simple", index="ht_bins"
+        data=df, values=value, columns="pos_simple", index="height_bins"
     )
     pivot_df = pivot_df.reset_index()
-    pivot_df = pivot_df.astype({"ht_bins": "str"})
-    cols = [{"name": col, "id": col} for col in pivot_df.columns]
+    pivot_df = pivot_df.astype({"height_bins": "str"})
+    cols = [{
+        "name": col, 
+        "id": col,
+        "type": "numeric",
+        "format": Format(precision=5)
+    } for col in pivot_df.columns]
     data = pivot_df.to_dict("records")
 
     return data, cols
