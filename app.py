@@ -3,10 +3,8 @@
 
 import dash
 from dash.dependencies import Input, Output
-import dash_table
-import dash_core_components as dcc
-import dash_html_components as html
-from dash_table.Format import Format
+from dash import dash_table, dcc, html
+from dash.dash_table.Format import Format
 import plotly.express as px
 
 import pandas as pd
