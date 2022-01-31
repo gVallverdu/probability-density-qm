@@ -1,0 +1,53 @@
+/* ==========================================================================
+ style.css
+========================================================================== */
+
+body {
+    background: #ffffff;
+}
+
+.container {
+  max-width: 1280px;
+  margin: auto;
+  padding: 0;
+}
+
+h2, h3, h4, h5, H6 {
+    color: rgb(60, 99, 130);
+}
+
+#github-div {
+    float: right;
+}
+
+#github-link {
+    color: #7f8c8d;
+    text-decoration: none;
+    display: block;
+    width: 160px;
+    border: solid 1px #7f8c8d;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center;
+}
+
+h2.tab-title {
+    border-bottom: solid 2px #3c6382;
+    padding-top: 30px;
+}
+
+.header {
+    /* padding-top: 20px;
+    padding-bottom: 20px; */
+    color: #fff;
+    background-color: #3c6382;
+    text-align: center;
+}
+
+.footer {
+    border-top: solid 2px #7f8c8d;
+    margin-top: 10px;
+    font-size: small;
+}
+
+

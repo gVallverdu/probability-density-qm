@@ -3,34 +3,23 @@
 
 import dash
 from dash.dependencies import Input, Output
-from dash import dash_table, dcc, html
-from dash.dash_table.Format import Format
-import plotly.express as px
+from dash import dcc, html
+import dash_latex as dl
 
-import pandas as pd
-
-# read data file
-# ------------------------------------------------------------------------------
-df = pd.read_csv(
-    "nba_physiques.csv",
-    index_col=0,
-    dtype={"Year": "int"}
-)
-# manage data
-df = df.assign(bmi=df.weight / ((df.height / 100) ** 2))
-df = df.assign(height_bins=pd.qcut(df.height, q=4))
-df = df[["Year", "height", "weight", "bmi",
-         "PER", "PTS", "pos_simple", "height_bins"]]
-
+from infinite_well import infinite_well_plot
 
 # Set up app
 # ------------------------------------------------------------------------------
 external_stylesheets = [
     'https://codepen.io/chriddyp/pen/bWLwgP.css',
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
 ]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
+
+TITLE = "Probability density of a particle in a box"
+URL = "https://github.com/gVallverdu/probability-density-qm"
 
 # HTML page Layout
 # ------------------------------------------------------------------------------
@@ -38,72 +27,103 @@ server = app.server
 #    * header: at the top, a title
 #    * body: the main containt
 #    * footer: at the bottom, contact, informations, credits
-app.layout = html.Div([
-    # ------ header
-    html.Div(
-        className="header",
-        style={"backgroundColor": "#3c6382"},
-        children=[html.H2(
-            "Stats on NBA players - Dash app example",
-            style={
-                "color": "white",
-                "padding": "30px 0 30px 0",
-                "textAlign": "center"}
-        )],
-    ),
+app.layout = html.Div(className="container", children=[
+    html.Div(id="github-div", children=[
+        html.A(
+            id="github-link",
+            href=URL,
+            children=[
+                html.Span(
+                    id="github-icon", className="fab fa-github fa-2x",
+                    style={"verticalAlign": "bottom"}),
+                    " View on GitHub"])
+    ]),
 
     # ----- body
-    html.Div(className="container", children=[
-        # a sub title
-        html.H3("A plot"),
-        # first dropdown selector
-        dcc.Dropdown(
-            id="x-dropdown",  # identifiant
-            value="height",  # default value
-            # all values in the menu
-            options=[{"label": name, "value": name} for name in df.columns],
-        ),
-        # second dropdown selector
-        dcc.Dropdown(
-            id="y-dropdown",
-            value="weight",
-            options=[{"label": name, "value": name} for name in df.columns],
-        ),
+    html.Div([
+        html.H2(className="tab-title", children=TITLE),
+        html.Div(children=[
+            dl.DashLatex(r"""Hereafter, we consider the solutions of the 
+            Shcrödinger equation for a particle in a box also known as 
+            the infinite potential well. In such a case, the particle is 
+            free to move on a segment of length $L$ : $x\in[0, L]$. 
+            The Schrödinger equation reads"""),
+            dl.DashLatex(r"""$$\begin{aligned}
+             \hat{\mathcal{H}} \phi  & = \varepsilon\phi &
+            \qquad-\frac{\hbar^2}{2m}\frac{d^2\phi}{dx^2} & = \varepsilon \phi
+            \end{aligned}$$""", displayMode=True),
+            html.P("""The solutions of the Schrödinger equation have to
+                satisfy the following boundary conditions along with the 
+                normalisation condition:"""),
+            dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
+                \phi(0) & = 0 \\
+                \phi(L) & = 0 \\
+                \end{cases} & &
+                \qquad\int_0^L \left\vert\phi(x)\right\vert^2 dx & = 1
+            \end{aligned}$$""", displayMode=True),
+            dl.DashLatex(r"""The solutions are the couples associating 
+            the wavefunctions $\phi_p$ and the energies $\varepsilon_p$
+            (the eigenfunctions and the eigenvectors) and read:"""),
+            dl.DashLatex(r"""$$\begin{aligned}
+            \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
+            \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
+            \end{aligned}$$""", displayMode=True),
+        ]),
+
+        html.Div(className="row", children=[
+            html.Div(className="five columns", children=[
+                html.H4("Value of the quantum number p"),
+                dcc.Slider(
+                    id='p-slider',
+                    min=1, max=20, step=1, value=1,
+                    marks={i: {"label": str(i)} for i in [1, 5, 10, 15, 20]},
+                    tooltip=dict(placement="bottom", always_visible=True)
+                ),
+            ]),
+            html.Div(className="five columns", children=[
+                html.H4("Number of points"),
+                dcc.Slider(
+                    id='npts-slider',
+                    min=1, max=2000, step=10, value=100,
+                    marks={i: {"label": str(i)} for i in range(0, 2250, 250)},
+                    tooltip=dict(placement="bottom", always_visible=True)
+                ),
+            ]),
+            html.Div(className="two columns", children=[
+                html.H4("Run"),
+                html.Button(
+                    "Replot", id="replot-btn", n_clicks=0
+                ),
+            ])
+        ]),
+
         # a place for the plot with an id
         html.Div(
             dcc.Graph(id='graph'),
         ),
-        # a line
-        html.Hr(),
-        # a sub title
-        html.H3("A table"),
-        # a new dropdown
-        dcc.Dropdown(
-            id="pivot-dropdown",
-            value="height",
-            options=[
-                {"label": name, "value": name} 
-                for name in ["Year", "height", "weight", "bmi", "PER", "PTS"]
-            ],
-        ),
-        # a table for data
-        dash_table.DataTable(
-            id="pivot-table",
-        ),
     ]),
 
     # ----- footer
-    html.Div(
-        className="footer",
-        style={"backgroundColor": "#3c6382"},
-        children=[html.H2(
-            "https://github.com/gVallverdu/dash-example-NBA",
-            style={
-                "color": "white",
-                "padding": "30px 0 30px 0",
-                "textAlign": "center"}
-        )],
-    ),
+    html.Div(className="footer", children=[
+        html.Div(className="row", children=[
+            html.Div(className="six columns", children=[
+                html.A(
+                    html.Img(
+                        src="http://gvallver.perso.univ-pau.fr/img/logo_uppa.png",
+                        height="50px",
+                    ),
+                    href="https://www.univ-pau.fr"
+                )
+            ]),
+            html.Div(className="six columns", children=[
+                html.P(children=[
+                    html.A("Germain Salvato Vallverdu",
+                            href="https://gsalvatovallverdu.gitlab.io",
+                            style={"color": "#7f8c8d"})
+                ]),
+            ], style={"textAlign": "right", "paddingTop": "10px"})
+        ]),
+    ]),
 ])
 
 # Callback functions => interactivity
@@ -113,53 +133,16 @@ app.layout = html.Div([
 
 @app.callback(
     Output('graph', 'figure'),
-    [Input("x-dropdown", "value"),
-     Input("y-dropdown", "value")],
+    [Input("p-slider", "value"),
+     Input("npts-slider", "value"),
+     Input("replot-btn", "n_clicks")],
 )
-def display_graph(xvalue, yvalue):
-    """ 
-    This function produce the plot.
+def display_graph(p, ntry, n_clicks):
+    """ This function produce the plot from the sliders or the replot
+    button. """
 
-    The output is the "figure" of the graph
-    The inputs, are the values of the two dropdown menus
-    """
-
-    figure = px.scatter(
-        df,
-        x=xvalue, y=yvalue,
-        color='pos_simple',
-        category_orders=dict(pos_simple=['PG', 'SG', 'SF', 'PF', 'C']),
-        marginal_x="histogram",
-        marginal_y="histogram",
-        template="plotly_white",
-    )
-
-    return figure
-
-
-@app.callback(
-    [Output("pivot-table", "data"),
-     Output("pivot-table", "columns")],
-    [Input("pivot-dropdown", "value")]
-)
-def show_pivot_table(value):
-    """ This function return a pivot Table """
-
-    pivot_df = pd.pivot_table(
-        data=df, values=value, columns="pos_simple", index="height_bins"
-    )
-    pivot_df = pivot_df.reset_index()
-    pivot_df = pivot_df.astype({"height_bins": "str"})
-    cols = [{
-        "name": col, 
-        "id": col,
-        "type": "numeric",
-        "format": Format(precision=5)
-    } for col in pivot_df.columns]
-    data = pivot_df.to_dict("records")
-
-    return data, cols
+    return infinite_well_plot(p, L=1, ntry=ntry, nbins=30, jitter=.5)
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host='127.0.0.1')
