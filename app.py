@@ -2,11 +2,14 @@
 # coding: utf-8
 
 import dash
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import dash_latex as dl
+import plotly.graph_objects as go
 
-from infinite_well import infinite_well_plot
+import numpy as np
+
+from infinite_well import phi, infinite_well_plot
 
 # Set up app
 # ------------------------------------------------------------------------------
@@ -21,12 +24,99 @@ server = app.server
 TITLE = "Probability density of a particle in a box"
 URL = "https://github.com/gVallverdu/probability-density-qm"
 
-# HTML page Layout
+# Plot tab:
+#     controls of the plot
+#     the plot
 # ------------------------------------------------------------------------------
-# Page is divided in three parts:
-#    * header: at the top, a title
-#    * body: the main containt
-#    * footer: at the bottom, contact, informations, credits
+plot_tab = dcc.Tab(
+    label=" Plot", className="fas fa-chart-area custom-tab", 
+    selected_className='custom-tab--selected', 
+    # labelClassName="fas fa-chart-area",
+    children=[html.Div(className="custom-tab-container", children=[
+        html.Div(className="row", children=[
+            html.Div(className="four columns", children=[
+                html.H4("Value of the quantum number p"),
+                dcc.Slider(
+                    id='p-slider',
+                    min=1, max=20, step=1, value=1,
+                    marks={i: {"label": str(i)} for i in [1, 5, 10, 15, 20]},
+                    tooltip=dict(placement="bottom", always_visible=True)
+                ),
+            ]),
+            html.Div(className="four columns", children=[
+                html.H4("Number of points"),
+                dcc.Slider(
+                    id='npts-slider',
+                    min=1, max=2000, step=10, value=100,
+                    marks={i: {"label": str(i)} for i in range(0, 2250, 250)},
+                    tooltip=dict(placement="bottom", always_visible=True)
+                ),
+            ]),
+            html.Div(className="two columns", children=[
+                html.H4("Replot"),
+                html.Button(
+                    "run", id="replot-btn", n_clicks=0
+                ),
+            ]),
+            html.Div(className="two columns", children=[
+                html.H4("Wavefunction"),
+                dcc.RadioItems(
+                    id="show_wf",
+                    options=[
+                        dict(label="Show", value="Show"),
+                        dict(label="Hide", value="Hide"),
+                    ],
+                    value="Hide",
+                    labelStyle={'display': 'inline-block'},
+                    inputStyle={"margin-left": "10px"}
+                ),
+            ]),
+        ]),
+        # a place for the plot
+        html.Div(
+            dcc.Graph(id='graph'),
+        ),
+    ])
+])
+
+doc_tab = dcc.Tab(
+    label=" Documentation", 
+    # labelClassName="fas fa-file-alt",
+    className="fas fa-file-alt custom-tab", 
+    selected_className='custom-tab--selected',
+    children=[
+    html.Div(className="custom-tab-container", children=[
+        dl.DashLatex(r"""Here, we consider the solutions of the 
+        Shcrödinger equation for a particle of mass $m$ in a box also known as 
+        the infinite potential well. In such a case, the particle is 
+        free to move on a segment of length $L$ : $x\in[0, L]$. 
+        The Schrödinger equation reads"""),
+        dl.DashLatex(r"""$$\begin{aligned}
+            \hat{\mathcal{H}} \phi  & = \varepsilon\phi &
+        \qquad-\frac{\hbar^2}{2m}\frac{d^2\phi}{dx^2} & = \varepsilon \phi
+        \end{aligned}$$""", displayMode=True),
+        html.P("""The solutions of the Schrödinger equation have to
+            satisfy the following boundary conditions along with the 
+            normalisation condition:"""),
+        dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
+            \phi(0) & = 0 \\
+            \phi(L) & = 0 \\
+            \end{cases} & &
+            \qquad\int_0^L \left\vert\phi(x)\right\vert^2 dx & = 1
+        \end{aligned}$$""", displayMode=True),
+        dl.DashLatex(r"""The solutions are the couples, identified
+        by the quantum number $p\in\mathbb{N}^*$, associating 
+        the wavefunctions $\phi_p$ and the energies $\varepsilon_p$
+        (the eigenfunctions and the eigenvectors). They read:"""),
+        dl.DashLatex(r"""$$\begin{aligned}
+        \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
+        \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
+        \end{aligned}$$""", displayMode=True),
+    ]),
+])
+
+# HTML page Layout
+# ----------------
 app.layout = html.Div(className="container", children=[
     html.Div(id="github-div", children=[
         html.A(
@@ -41,66 +131,8 @@ app.layout = html.Div(className="container", children=[
 
     # ----- body
     html.Div([
-        html.H2(className="tab-title", children=TITLE),
-        html.Div(children=[
-            dl.DashLatex(r"""Hereafter, we consider the solutions of the 
-            Shcrödinger equation for a particle in a box also known as 
-            the infinite potential well. In such a case, the particle is 
-            free to move on a segment of length $L$ : $x\in[0, L]$. 
-            The Schrödinger equation reads"""),
-            dl.DashLatex(r"""$$\begin{aligned}
-             \hat{\mathcal{H}} \phi  & = \varepsilon\phi &
-            \qquad-\frac{\hbar^2}{2m}\frac{d^2\phi}{dx^2} & = \varepsilon \phi
-            \end{aligned}$$""", displayMode=True),
-            html.P("""The solutions of the Schrödinger equation have to
-                satisfy the following boundary conditions along with the 
-                normalisation condition:"""),
-            dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
-                \phi(0) & = 0 \\
-                \phi(L) & = 0 \\
-                \end{cases} & &
-                \qquad\int_0^L \left\vert\phi(x)\right\vert^2 dx & = 1
-            \end{aligned}$$""", displayMode=True),
-            dl.DashLatex(r"""The solutions are the couples associating 
-            the wavefunctions $\phi_p$ and the energies $\varepsilon_p$
-            (the eigenfunctions and the eigenvectors) and read:"""),
-            dl.DashLatex(r"""$$\begin{aligned}
-            \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
-            \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
-            \end{aligned}$$""", displayMode=True),
-        ]),
-
-        html.Div(className="row", children=[
-            html.Div(className="five columns", children=[
-                html.H4("Value of the quantum number p"),
-                dcc.Slider(
-                    id='p-slider',
-                    min=1, max=20, step=1, value=1,
-                    marks={i: {"label": str(i)} for i in [1, 5, 10, 15, 20]},
-                    tooltip=dict(placement="bottom", always_visible=True)
-                ),
-            ]),
-            html.Div(className="five columns", children=[
-                html.H4("Number of points"),
-                dcc.Slider(
-                    id='npts-slider',
-                    min=1, max=2000, step=10, value=100,
-                    marks={i: {"label": str(i)} for i in range(0, 2250, 250)},
-                    tooltip=dict(placement="bottom", always_visible=True)
-                ),
-            ]),
-            html.Div(className="two columns", children=[
-                html.H4("Run"),
-                html.Button(
-                    "Replot", id="replot-btn", n_clicks=0
-                ),
-            ])
-        ]),
-
-        # a place for the plot with an id
-        html.Div(
-            dcc.Graph(id='graph'),
-        ),
+        html.H3(className="tab-title", children=TITLE),
+        dcc.Tabs([plot_tab, doc_tab]),
     ]),
 
     # ----- footer
@@ -135,14 +167,20 @@ app.layout = html.Div(className="container", children=[
     Output('graph', 'figure'),
     [Input("p-slider", "value"),
      Input("npts-slider", "value"),
-     Input("replot-btn", "n_clicks")],
+     Input("replot-btn", "n_clicks"),
+     Input("show_wf", "value")],
 )
-def display_graph(p, ntry, n_clicks):
+def display_graph(p, ntry, n_clicks, show_wf):
     """ This function produce the plot from the sliders or the replot
     button. """
 
-    return infinite_well_plot(p, L=1, ntry=ntry, nbins=30, jitter=.5)
+    # params
+    L = 1
+    nbins = 30
+    jitter = .5
 
+    return infinite_well_plot(p, L=L, ntry=ntry, nbins=nbins, 
+                              jitter=jitter, show_wf=show_wf)
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1')

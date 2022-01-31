@@ -53,7 +53,7 @@ def sample(ntry=100, p=1, L=1):
             pos.append(x)
     return pos
 
-def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5):
+def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
     """ 
     This function produce a plot with the probability density and an
     histogram of the position drawn from this density. The points are
@@ -66,6 +66,7 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5):
         ntry (int): the number of sampled points
         nbins (int): number of bins for histogram plot
         jitter (float): dispersion along y for points representation
+        show_wf (bool): if True the wavefunction is plotted
 
     Returns:
         A plotly figure object
@@ -115,6 +116,17 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5):
         row=2, col=1,
     )
     
+    if show_wf == "Show":
+        fig.add_trace(
+            go.Scatter(
+                x=x, y=phi(x, p, L),
+                mode="lines",
+                name="wavefunction",
+                line=dict(color="#2ca02c")
+            ),
+            row=1, col=1,
+        )
+
     fig.update_xaxes(
         showticklabels=True, 
         title="x (A)",
@@ -122,7 +134,8 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5):
     )
     fig.update_yaxes(
         showticklabels=False, row=2, col=1, 
-        title="sample points"
+        title="sample points",
+        range=[-8 * jitter, 8 * jitter]
     )
 
     fig.update_layout(
