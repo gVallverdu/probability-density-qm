@@ -4,9 +4,8 @@
 import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
-import dash_latex as dl
 
-from infinite_well import phi, infinite_well_plot
+from infinite_well import infinite_well_plot, text_doc
 
 # Set up app
 # ------------------------------------------------------------------------------
@@ -35,10 +34,8 @@ NPTS_STEP = 10
 plot_tab = dcc.Tab(
     label=" Plot", className="fas fa-chart-area custom-tab",
     selected_className='custom-tab--selected',
-    # labelClassName="fas fa-chart-area",
     children=[html.Div(className="custom-tab-container", children=[
         html.Div(children=[
-            # html.Div(className="four columns", children=[
             html.Div([
                 html.H4("Value of the quantum number p"),
                 html.Div([
@@ -64,7 +61,6 @@ plot_tab = dcc.Tab(
                            "grid-template-columns": "15% 70% 15%"}
                 ),
             ]),
-            # html.Div(className="four columns", children=[
             html.Div([
                 html.H4("Number of points"),
                 html.Div([
@@ -90,7 +86,6 @@ plot_tab = dcc.Tab(
                            "grid-template-columns": "15% 75% 15%"}
                 ),
             ]),
-            # html.Div(className="two columns", children=[
             html.Div([
                 html.H4("Wavefunction"),
                 dcc.RadioItems(
@@ -104,7 +99,6 @@ plot_tab = dcc.Tab(
                     inputStyle={"margin-left": "10px"}
                 ),
             ]),
-            # html.Div(className="two columns", children=[
             html.Div([
                 html.H4("Replot"),
                 html.Button(
@@ -114,47 +108,21 @@ plot_tab = dcc.Tab(
         ],
             style={"display": "grid", "grid-template-columns": "35% 35% 20% 10%"}
         ),
-        # a place for the plot
         html.Div(
             dcc.Graph(id='graph'),
         ),
     ])
     ])
 
+# Doc tab:
+#     provide explications
+# ------------------------------------------------------------------------------
 doc_tab = dcc.Tab(
     label=" Documentation",
-    # labelClassName="fas fa-file-alt",
     className="fas fa-file-alt custom-tab",
     selected_className='custom-tab--selected',
     children=[
-        html.Div(className="custom-tab-container docs", children=[
-            dl.DashLatex(r"""Here, we consider the solutions of the 
-        Schrödinger equation for a particle of mass $m$ in a box also known as 
-        the infinite potential well. In such a case, the particle is 
-        free to move on a segment of length $L$ : $x\in[0, L]$. 
-        The Schrödinger equation reads"""),
-            dl.DashLatex(r"""$$\begin{aligned}
-            \hat{\mathcal{H}} \phi  & = \varepsilon\phi &
-        \qquad-\frac{\hbar^2}{2m}\frac{d^2\phi}{dx^2} & = \varepsilon \phi
-        \end{aligned}$$""", displayMode=True),
-            html.P("""The solutions of the Schrödinger equation have to
-            satisfy the following boundary conditions along with the 
-            normalisation condition:"""),
-            dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
-            \phi(0) & = 0 \\
-            \phi(L) & = 0 \\
-            \end{cases} & &
-            \qquad\int_0^L \left\vert\phi(x)\right\vert^2 dx & = 1
-        \end{aligned}$$""", displayMode=True),
-            dl.DashLatex(r"""The solutions are the couples, identified
-        by the quantum number $p\in\mathbb{N}^*$, associating 
-        the wavefunctions $\phi_p$ (the eigenvectors) and the energies $\varepsilon_p$
-        (the eigenfunctions). They read:"""),
-            dl.DashLatex(r"""$$\begin{aligned}
-        \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
-        \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
-        \end{aligned}$$""", displayMode=True),
-        ]),
+        html.Div(className="custom-tab-container docs", children=text_doc),
     ])
 
 # HTML page Layout
@@ -201,10 +169,7 @@ app.layout = html.Div(className="container", children=[
 ])
 
 # Callback functions => interactivity
-# Each element on the page is identified thanks to its `id`
 # ------------------------------------------------------------------------------
-
-
 @app.callback(
     Output('graph', 'figure'),
     [Input("p-slider", "value"),
@@ -218,11 +183,9 @@ def display_graph(p, ntry, n_clicks, show_wf):
 
     # params
     L = 1
-    nbins = 30
     jitter = .5
 
-    return infinite_well_plot(p, L=L, ntry=ntry, nbins=nbins,
-                              jitter=jitter, show_wf=show_wf)
+    return infinite_well_plot(p, L=L, ntry=ntry, jitter=jitter, show_wf=show_wf)
 
 
 @app.callback(
