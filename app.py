@@ -114,7 +114,7 @@ plot_tab = dcc.Tab(
         ),
         # a place for the plot
         html.Div(
-            dcc.Graph(id='graph'),
+            dcc.Graph(id='graph', config=dict(scrollZoom=False)),
         ),
     ])
     ])
