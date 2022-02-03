@@ -85,4 +85,12 @@ h3.tab-title {
     font-size: small;
 }
 
+button {
+    line-height: 1em;
+}
+
+.docs {
+    font-size: large;
+}
+
 

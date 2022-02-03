@@ -5,9 +5,6 @@ import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import dash_latex as dl
-import plotly.graph_objects as go
-
-import numpy as np
 
 from infinite_well import phi, infinite_well_plot
 
@@ -20,43 +17,76 @@ external_stylesheets = [
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
+app.title = "Probability density - Quantum chemistry"
 
 TITLE = "Probability density of a particle in a box"
 URL = "https://github.com/gVallverdu/probability-density-qm"
+
+# parameter
+P_MAX = 15
+NPTS_MAX = 1000
+NPTS_STEP = 10
+
 
 # Plot tab:
 #     controls of the plot
 #     the plot
 # ------------------------------------------------------------------------------
 plot_tab = dcc.Tab(
-    label=" Plot", className="fas fa-chart-area custom-tab", 
-    selected_className='custom-tab--selected', 
+    label=" Plot", className="fas fa-chart-area custom-tab",
+    selected_className='custom-tab--selected',
     # labelClassName="fas fa-chart-area",
     children=[html.Div(className="custom-tab-container", children=[
         html.Div(className="row", children=[
             html.Div(className="four columns", children=[
                 html.H4("Value of the quantum number p"),
-                dcc.Slider(
-                    id='p-slider',
-                    min=1, max=20, step=1, value=1,
-                    marks={i: {"label": str(i)} for i in [1, 5, 10, 15, 20]},
-                    tooltip=dict(placement="bottom", always_visible=True)
-                ),
+                html.Div(className="row", children=[
+                    html.Div(className="six columns", children=[
+                        dcc.Slider(
+                            id='p-slider',
+                            min=1, max=P_MAX, step=1, value=1,
+                            marks={i: {"label": str(i)}
+                                   for i in range(0, P_MAX + 5, 5)},
+                            tooltip=dict(placement="bottom",
+                                         always_visible=True)
+                        ),
+                    ]),
+                    html.Div(className="six columns", children=[
+                        html.Button(
+                            html.Span(className="fas fa-plus-square fa-2x"),
+                            id="p-plus-btn", n_clicks=0
+                        ),
+                        html.Button(
+                            html.Span(className="fas fa-minus-square fa-2x"),
+                            id="p-minus-btn", n_clicks=0
+                        ),
+                    ])
+                ])
             ]),
             html.Div(className="four columns", children=[
                 html.H4("Number of points"),
-                dcc.Slider(
-                    id='npts-slider',
-                    min=1, max=2000, step=10, value=100,
-                    marks={i: {"label": str(i)} for i in range(0, 2250, 250)},
-                    tooltip=dict(placement="bottom", always_visible=True)
-                ),
-            ]),
-            html.Div(className="two columns", children=[
-                html.H4("Replot"),
-                html.Button(
-                    "run", id="replot-btn", n_clicks=0
-                ),
+                html.Div(className="row", children=[
+                    html.Div(className="six columns", children=[
+                        dcc.Slider(
+                            id='npts-slider',
+                            min=1, max=NPTS_MAX, step=NPTS_STEP, value=100,
+                            marks={i: {"label": str(i)} for i in range(
+                                0, NPTS_MAX + 200, 200)},
+                            tooltip=dict(placement="bottom",
+                                         always_visible=True)
+                        ),
+                    ]),
+                    html.Div(className="six columns", children=[
+                        html.Button(
+                            html.Span(className="fas fa-plus-square fa-2x"),
+                            id="npts-plus-btn", n_clicks=0
+                        ),
+                        html.Button(
+                            html.Span(className="fas fa-minus-square fa-2x"),
+                            id="npts-minus-btn", n_clicks=0
+                        ),
+                    ])
+                ])
             ]),
             html.Div(className="two columns", children=[
                 html.H4("Wavefunction"),
@@ -71,49 +101,55 @@ plot_tab = dcc.Tab(
                     inputStyle={"margin-left": "10px"}
                 ),
             ]),
+            html.Div(className="two columns", children=[
+                html.H4("Replot"),
+                html.Button(
+                    "run", id="replot-btn", n_clicks=0
+                ),
+            ]),
         ]),
         # a place for the plot
         html.Div(
             dcc.Graph(id='graph'),
         ),
     ])
-])
+    ])
 
 doc_tab = dcc.Tab(
-    label=" Documentation", 
+    label=" Documentation",
     # labelClassName="fas fa-file-alt",
-    className="fas fa-file-alt custom-tab", 
+    className="fas fa-file-alt custom-tab",
     selected_className='custom-tab--selected',
     children=[
-    html.Div(className="custom-tab-container", children=[
-        dl.DashLatex(r"""Here, we consider the solutions of the 
+        html.Div(className="custom-tab-container docs", children=[
+            dl.DashLatex(r"""Here, we consider the solutions of the 
         Shcrödinger equation for a particle of mass $m$ in a box also known as 
         the infinite potential well. In such a case, the particle is 
         free to move on a segment of length $L$ : $x\in[0, L]$. 
         The Schrödinger equation reads"""),
-        dl.DashLatex(r"""$$\begin{aligned}
+            dl.DashLatex(r"""$$\begin{aligned}
             \hat{\mathcal{H}} \phi  & = \varepsilon\phi &
         \qquad-\frac{\hbar^2}{2m}\frac{d^2\phi}{dx^2} & = \varepsilon \phi
         \end{aligned}$$""", displayMode=True),
-        html.P("""The solutions of the Schrödinger equation have to
+            html.P("""The solutions of the Schrödinger equation have to
             satisfy the following boundary conditions along with the 
             normalisation condition:"""),
-        dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
+            dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
             \phi(0) & = 0 \\
             \phi(L) & = 0 \\
             \end{cases} & &
             \qquad\int_0^L \left\vert\phi(x)\right\vert^2 dx & = 1
         \end{aligned}$$""", displayMode=True),
-        dl.DashLatex(r"""The solutions are the couples, identified
+            dl.DashLatex(r"""The solutions are the couples, identified
         by the quantum number $p\in\mathbb{N}^*$, associating 
         the wavefunctions $\phi_p$ and the energies $\varepsilon_p$
         (the eigenfunctions and the eigenvectors). They read:"""),
-        dl.DashLatex(r"""$$\begin{aligned}
+            dl.DashLatex(r"""$$\begin{aligned}
         \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
         \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
         \end{aligned}$$""", displayMode=True),
-    ]),
-])
+        ]),
+    ])
 
 # HTML page Layout
 # ----------------
@@ -126,7 +162,7 @@ app.layout = html.Div(className="container", children=[
                 html.Span(
                     id="github-icon", className="fab fa-github fa-2x",
                     style={"verticalAlign": "bottom"}),
-                    " View on GitHub"])
+                " View on GitHub"])
     ]),
 
     # ----- body
@@ -150,8 +186,8 @@ app.layout = html.Div(className="container", children=[
             html.Div(className="six columns", children=[
                 html.P(children=[
                     html.A("Germain Salvato Vallverdu",
-                            href="https://gsalvatovallverdu.gitlab.io",
-                            style={"color": "#7f8c8d"})
+                           href="https://gsalvatovallverdu.gitlab.io",
+                           style={"color": "#7f8c8d"})
                 ]),
             ], style={"textAlign": "right", "paddingTop": "10px"})
         ]),
@@ -179,8 +215,59 @@ def display_graph(p, ntry, n_clicks, show_wf):
     nbins = 30
     jitter = .5
 
-    return infinite_well_plot(p, L=L, ntry=ntry, nbins=nbins, 
+    return infinite_well_plot(p, L=L, ntry=ntry, nbins=nbins,
                               jitter=jitter, show_wf=show_wf)
+
+
+@app.callback(
+    Output("p-slider", "value"),
+    [Input("p-plus-btn", "n_clicks"),
+     Input("p-minus-btn", "n_clicks")],
+    State("p-slider", "value"),
+)
+def increase_p(click_plus, click_minus, p):
+    ctx = dash.callback_context
+
+    if ctx.triggered[0]["prop_id"] == "p-plus-btn.n_clicks":
+        if p < P_MAX:
+            return p + 1
+        else:
+            return p
+
+    elif ctx.triggered[0]["prop_id"] == "p-minus-btn.n_clicks":
+        if p > 1:
+            return p - 1
+        else:
+            return p
+
+    else:
+        return p
+
+
+@app.callback(
+    Output("npts-slider", "value"),
+    [Input("npts-plus-btn", "n_clicks"),
+     Input("npts-minus-btn", "n_clicks")],
+    State("npts-slider", "value"),
+)
+def increase_p(click_plus, click_minus, npts):
+    ctx = dash.callback_context
+
+    if ctx.triggered[0]["prop_id"] == "npts-plus-btn.n_clicks":
+        if npts < NPTS_MAX:
+            return npts + NPTS_STEP
+        else:
+            return npts
+
+    elif ctx.triggered[0]["prop_id"] == "npts-minus-btn.n_clicks":
+        if npts > NPTS_STEP:
+            return npts - NPTS_STEP
+        else:
+            return npts
+
+    else:
+        return npts
+
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1')

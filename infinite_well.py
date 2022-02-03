@@ -17,13 +17,14 @@ __email__ = "germain.vallverdu@univ-pau.fr"
 
 def phi(x, p=1, L=1):
     """ Wavefunction solution of the infinite well system
-    
+
     Args:
         p (int): quantum number
         m (float): particle mass
         L (float): width of the well 
     """
     return np.sqrt(2 / L) * np.sin(p * np.pi * x / L)
+
 
 def epsilon(p, m=m_e, L=1):
     """ Energy associated to the wavefunction of the infinite well system.
@@ -52,6 +53,7 @@ def sample(ntry=100, p=1, L=1):
             n += 1
             pos.append(x)
     return pos
+
 
 def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
     """ 
@@ -86,11 +88,11 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
     fig.add_trace(go.Histogram(
         x=pos,
         opacity=.4,
-        nbinsx=nbins,
+        # nbinsx=nbins,
         histnorm="probability density",
         marker_color="#1f77b4",
         name="histogram",
-        ),
+    ),
         row=1, col=1
     )
 
@@ -115,7 +117,23 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
         ),
         row=2, col=1,
     )
-    
+
+    if p > 1:
+        nodes = [(i * L / p, 0) for i in range(1, p)]
+        fig.add_trace(
+            go.Scatter(
+                x=[v[0] for v in nodes],
+                y=[v[1] for v in nodes],
+                mode="markers",
+                marker_color="#ff7f0e",
+                marker_size=15,
+                name="nodes",
+                hoverinfo="skip",
+                # showlegend=False,
+
+            )
+        )
+
     if show_wf == "Show":
         fig.add_trace(
             go.Scatter(
@@ -128,20 +146,20 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
         )
 
     fig.update_xaxes(
-        showticklabels=True, 
+        showticklabels=True,
         title="x (A)",
         row=2, col=1
     )
     fig.update_yaxes(
-        showticklabels=False, row=2, col=1, 
-        title="sample points",
+        showticklabels=False, row=2, col=1,
+        title=f"sample points <br> npts = {ntry}",
         range=[-8 * jitter, 8 * jitter]
     )
 
     fig.update_layout(
-        title="Infinite potential well wavefunctions",
+        title=f"Infinite potential well wavefunctions: p = {p}",
         autosize=True,
-        # width=800, 
+        # width=800,
         height=600,
         yaxis_title="Probability density",
         xaxis=dict(range=[0, L]),
