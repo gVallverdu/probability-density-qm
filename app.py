@@ -51,16 +51,17 @@ plot_tab = dcc.Tab(
                         id='p-slider',
                         min=1, max=P_MAX, step=1, value=1,
                         marks={i: {"label": str(i)}
-                                for i in range(0, P_MAX + 5, 5)},
+                               for i in range(0, P_MAX + 5, 5)},
                         tooltip=dict(placement="bottom",
-                                        always_visible=True)
+                                     always_visible=True)
                     ),
                     html.Button(
                         html.Span(className="fas fa-plus-square fa-3x"),
                         id="p-plus-btn", n_clicks=0, className="pm-btn",
                         style={"textAlign": "left"}
                     )],
-                    style={"display": "grid", "grid-template-columns": "15% 70% 15%"}
+                    style={"display": "grid",
+                           "grid-template-columns": "15% 70% 15%"}
                 ),
             ]),
             # html.Div(className="four columns", children=[
@@ -78,14 +79,15 @@ plot_tab = dcc.Tab(
                         marks={i: {"label": str(i)} for i in range(
                             0, NPTS_MAX + 200, 200)},
                         tooltip=dict(placement="bottom",
-                                        always_visible=True)
+                                     always_visible=True)
                     ),
                     html.Button(
                         html.Span(className="fas fa-plus-square fa-3x"),
                         id="npts-plus-btn", n_clicks=0, className="pm-btn",
                         style={"textAlign": "left"}
-                    ),],
-                    style={"display": "grid", "grid-template-columns": "15% 75% 15%"}
+                    ), ],
+                    style={"display": "grid",
+                           "grid-template-columns": "15% 75% 15%"}
                 ),
             ]),
             # html.Div(className="two columns", children=[
@@ -110,11 +112,11 @@ plot_tab = dcc.Tab(
                 ),
             ]),
         ],
-        style={"display": "grid", "grid-template-columns": "35% 35% 20% 10%"}
+            style={"display": "grid", "grid-template-columns": "35% 35% 20% 10%"}
         ),
         # a place for the plot
         html.Div(
-            dcc.Graph(id='graph', config=dict(scrollZoom=False)),
+            dcc.Graph(id='graph'),
         ),
     ])
     ])

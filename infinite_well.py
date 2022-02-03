@@ -147,13 +147,21 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
 
     fig.update_xaxes(
         showticklabels=True,
+        fixedrange=True,
         title="x (A)",
         row=2, col=1
     )
+
+    # avoid zooming capabilities
+    fig.update_xaxes(fixedrange=True, row=1, col=1)
+    fig.update_yaxes(fixedrange=True, row=1, col=1)
+
     fig.update_yaxes(
-        showticklabels=False, row=2, col=1,
+        fixedrange=True,
+        showticklabels=False,
         title=f"sample points <br> npts = {ntry}",
-        range=[-8 * jitter, 8 * jitter]
+        range=[-8 * jitter, 8 * jitter],
+        row=2, col=1
     )
 
     fig.update_layout(
