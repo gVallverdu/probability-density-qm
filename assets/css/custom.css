@@ -85,8 +85,13 @@ h3.tab-title {
     font-size: small;
 }
 
-button {
-    line-height: 1em;
+.pm-btn {
+    /* line-height: 1.8em; */
+    /* vertical-align: middle; */
+    padding: 0;
+    width: 50px;
+    border: none;
+    /* width: 20dpi; */
 }
 
 .docs {

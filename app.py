@@ -37,58 +37,59 @@ plot_tab = dcc.Tab(
     selected_className='custom-tab--selected',
     # labelClassName="fas fa-chart-area",
     children=[html.Div(className="custom-tab-container", children=[
-        html.Div(className="row", children=[
-            html.Div(className="four columns", children=[
+        html.Div(children=[
+            # html.Div(className="four columns", children=[
+            html.Div([
                 html.H4("Value of the quantum number p"),
-                html.Div(className="row", children=[
-                    html.Div(className="six columns", children=[
-                        dcc.Slider(
-                            id='p-slider',
-                            min=1, max=P_MAX, step=1, value=1,
-                            marks={i: {"label": str(i)}
-                                   for i in range(0, P_MAX + 5, 5)},
-                            tooltip=dict(placement="bottom",
-                                         always_visible=True)
-                        ),
-                    ]),
-                    html.Div(className="six columns", children=[
-                        html.Button(
-                            html.Span(className="fas fa-plus-square fa-2x"),
-                            id="p-plus-btn", n_clicks=0
-                        ),
-                        html.Button(
-                            html.Span(className="fas fa-minus-square fa-2x"),
-                            id="p-minus-btn", n_clicks=0
-                        ),
-                    ])
-                ])
+                html.Div([
+                    html.Button(
+                        html.Span(className="fas fa-minus-square fa-3x"),
+                        id="p-minus-btn", n_clicks=0, className="pm-btn",
+                        style={"textAlign": "right"}
+                    ),
+                    dcc.Slider(
+                        id='p-slider',
+                        min=1, max=P_MAX, step=1, value=1,
+                        marks={i: {"label": str(i)}
+                                for i in range(0, P_MAX + 5, 5)},
+                        tooltip=dict(placement="bottom",
+                                        always_visible=True)
+                    ),
+                    html.Button(
+                        html.Span(className="fas fa-plus-square fa-3x"),
+                        id="p-plus-btn", n_clicks=0, className="pm-btn",
+                        style={"textAlign": "left"}
+                    )],
+                    style={"display": "grid", "grid-template-columns": "15% 70% 15%"}
+                ),
             ]),
-            html.Div(className="four columns", children=[
+            # html.Div(className="four columns", children=[
+            html.Div([
                 html.H4("Number of points"),
-                html.Div(className="row", children=[
-                    html.Div(className="six columns", children=[
-                        dcc.Slider(
-                            id='npts-slider',
-                            min=1, max=NPTS_MAX, step=NPTS_STEP, value=100,
-                            marks={i: {"label": str(i)} for i in range(
-                                0, NPTS_MAX + 200, 200)},
-                            tooltip=dict(placement="bottom",
-                                         always_visible=True)
-                        ),
-                    ]),
-                    html.Div(className="six columns", children=[
-                        html.Button(
-                            html.Span(className="fas fa-plus-square fa-2x"),
-                            id="npts-plus-btn", n_clicks=0
-                        ),
-                        html.Button(
-                            html.Span(className="fas fa-minus-square fa-2x"),
-                            id="npts-minus-btn", n_clicks=0
-                        ),
-                    ])
-                ])
+                html.Div([
+                    html.Button(
+                        html.Span(className="fas fa-minus-square fa-3x"),
+                        id="npts-minus-btn", n_clicks=0, className="pm-btn",
+                        style={"textAlign": "right"}
+                    ),
+                    dcc.Slider(
+                        id='npts-slider',
+                        min=1, max=NPTS_MAX, step=NPTS_STEP, value=100,
+                        marks={i: {"label": str(i)} for i in range(
+                            0, NPTS_MAX + 200, 200)},
+                        tooltip=dict(placement="bottom",
+                                        always_visible=True)
+                    ),
+                    html.Button(
+                        html.Span(className="fas fa-plus-square fa-3x"),
+                        id="npts-plus-btn", n_clicks=0, className="pm-btn",
+                        style={"textAlign": "left"}
+                    ),],
+                    style={"display": "grid", "grid-template-columns": "15% 75% 15%"}
+                ),
             ]),
-            html.Div(className="two columns", children=[
+            # html.Div(className="two columns", children=[
+            html.Div([
                 html.H4("Wavefunction"),
                 dcc.RadioItems(
                     id="show_wf",
@@ -101,13 +102,16 @@ plot_tab = dcc.Tab(
                     inputStyle={"margin-left": "10px"}
                 ),
             ]),
-            html.Div(className="two columns", children=[
+            # html.Div(className="two columns", children=[
+            html.Div([
                 html.H4("Replot"),
                 html.Button(
                     "run", id="replot-btn", n_clicks=0
                 ),
             ]),
-        ]),
+        ],
+        style={"display": "grid", "grid-template-columns": "35% 35% 20% 10%"}
+        ),
         # a place for the plot
         html.Div(
             dcc.Graph(id='graph'),
@@ -123,7 +127,7 @@ doc_tab = dcc.Tab(
     children=[
         html.Div(className="custom-tab-container docs", children=[
             dl.DashLatex(r"""Here, we consider the solutions of the 
-        Shcrödinger equation for a particle of mass $m$ in a box also known as 
+        Schrödinger equation for a particle of mass $m$ in a box also known as 
         the infinite potential well. In such a case, the particle is 
         free to move on a segment of length $L$ : $x\in[0, L]$. 
         The Schrödinger equation reads"""),
@@ -142,8 +146,8 @@ doc_tab = dcc.Tab(
         \end{aligned}$$""", displayMode=True),
             dl.DashLatex(r"""The solutions are the couples, identified
         by the quantum number $p\in\mathbb{N}^*$, associating 
-        the wavefunctions $\phi_p$ and the energies $\varepsilon_p$
-        (the eigenfunctions and the eigenvectors). They read:"""),
+        the wavefunctions $\phi_p$ (the eigenvectors) and the energies $\varepsilon_p$
+        (the eigenfunctions). They read:"""),
             dl.DashLatex(r"""$$\begin{aligned}
         \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
         \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
@@ -270,4 +274,4 @@ def increase_p(click_plus, click_minus, npts):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host='127.0.0.1')
+    app.run_server(debug=False, host='127.0.0.1')
