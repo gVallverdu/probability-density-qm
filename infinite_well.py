@@ -41,7 +41,7 @@ text_doc = [
         $p\in\mathbb{N}^*$. The solutions are labelled by this quantum number  
         $p$ and are the couples $(\phi_p, \varepsilon_p)$ including the 
         wavefunctions $\phi_p$ (the eigenvectors) and the energies 
-        $\varepsilon_p$ (the eigenfunctions). They read:"""),
+        $\varepsilon_p$ (the eigenvalues). They read:"""),
     dl.DashLatex(r"""$$\begin{aligned}
             \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
             \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
