@@ -7,6 +7,7 @@ from dash import dcc, html
 
 from components import header, footer
 from components import particle_box_components as pbc
+from components import ao_radial_components
 
 # Set up app
 # ------------------------------------------------------------------------------
@@ -22,29 +23,21 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.title = TITLE
 
-# HTML page Layout
-# ----------------
 app.layout = html.Div(className="container", children=[
     header(TITLE, URL, fa_icon="fas fa-atom"),
 
-    # ----- body
     html.Div([
         dcc.Tabs([
-            pbc.particle_box_tab(), 
+            pbc.particle_box_tab(),
+            ao_radial_components.radial_part_tab(),
         ]),
     ]),
 
-    # ----- footer
     footer(
         logo_img="http://gvallver.perso.univ-pau.fr/img/logo_uppa.png",
         logo_url="https://www.univ-pau.fr"
     ),
 ])
-
-# Callback functions => interactivity
-# ------------------------------------------------------------------------------
-
-
 
 if __name__ == '__main__':
     app.run_server(debug=True, host='127.0.0.1')
