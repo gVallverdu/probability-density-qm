@@ -5,6 +5,7 @@ import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 
+from components import header, footer
 from infinite_well import infinite_well_plot, text_doc
 
 # Set up app
@@ -18,7 +19,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 app.title = "Probability density - Quantum chemistry"
 
-TITLE = "Probability density of a particle in a box"
+TITLE = "Probability density - Quantum chemistry"
 URL = "https://github.com/gVallverdu/probability-density-qm"
 
 # parameter
@@ -128,16 +129,7 @@ doc_tab = dcc.Tab(
 # HTML page Layout
 # ----------------
 app.layout = html.Div(className="container", children=[
-    html.Div(id="github-div", children=[
-        html.A(
-            id="github-link",
-            href=URL,
-            children=[
-                html.Span(
-                    id="github-icon", className="fab fa-github fa-2x",
-                    style={"verticalAlign": "bottom"}),
-                " View on GitHub"])
-    ]),
+    header(TITLE, URL, fa_icon="fas fa-atom"),
 
     # ----- body
     html.Div([
@@ -146,26 +138,10 @@ app.layout = html.Div(className="container", children=[
     ]),
 
     # ----- footer
-    html.Div(className="footer", children=[
-        html.Div(className="row", children=[
-            html.Div(className="six columns", children=[
-                html.A(
-                    html.Img(
-                        src="http://gvallver.perso.univ-pau.fr/img/logo_uppa.png",
-                        height="50px",
-                    ),
-                    href="https://www.univ-pau.fr"
-                )
-            ]),
-            html.Div(className="six columns", children=[
-                html.P(children=[
-                    html.A("Germain Salvato Vallverdu",
-                           href="https://gsalvatovallverdu.gitlab.io",
-                           style={"color": "#7f8c8d"})
-                ]),
-            ], style={"textAlign": "right", "paddingTop": "10px"})
-        ]),
-    ]),
+    footer(
+        logo_img="http://gvallver.perso.univ-pau.fr/img/logo_uppa.png",
+        logo_url="https://www.univ-pau.fr"
+    ),
 ])
 
 # Callback functions => interactivity
@@ -239,4 +215,4 @@ def increase_p(click_plus, click_minus, npts):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host='127.0.0.1')
+    app.run_server(debug=True, host='127.0.0.1')

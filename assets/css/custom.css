@@ -1,6 +1,8 @@
-/* ==========================================================================
+/* 
+==========================================================================
  style.css
-========================================================================== */
+========================================================================== 
+*/
 
 body {
     background: #ffffff;
@@ -26,6 +28,9 @@ h5 { font-size: 1.6rem; line-height: 1.5;  letter-spacing: -.05rem; margin-botto
 h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.75rem; margin-top: 0.75rem;}
 
 
+/* Tabs
+-------
+*/
 .custom-tab {
     color:  #7F7F7F;
     font-size: large;
@@ -51,6 +56,15 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.7
     border-bottom: 1px solid lightgrey !important;
 }
 
+h3.tab-title {
+    border-bottom: solid 2px #3c6382;
+    padding-top: 30px;
+}
+
+
+/* header
+---------
+*/
 #github-div {
     float: right;
 }
@@ -66,19 +80,23 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.7
     text-align: center;
 }
 
-h3.tab-title {
-    border-bottom: solid 2px #3c6382;
-    padding-top: 30px;
-}
-
 .header {
     /* padding-top: 20px;
-    padding-bottom: 20px; */
+    padding-bottom: 20px;
     color: #fff;
     background-color: #3c6382;
-    text-align: center;
+    text-align: center; */
+    border-bottom: solid 2px #3c6382;
 }
 
+.header h1 {
+    color: #3c6382;
+    font-size: 2em;
+}
+
+/* footer
+---------
+*/
 .footer {
     /* border-top: solid 2px #7f8c8d; */
     margin-top: 10px;
