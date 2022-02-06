@@ -7,46 +7,12 @@ from scipy.constants import h, m_e, elementary_charge
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from dash import html
-import dash_latex as dl
-
-
 """ This module implements wave functions to be considered in the
-application. """
+application in the case of the particle in a box system. """
 
 __author__ = "Germain Salvato Vallverdu"
 __email__ = "germain.vallverdu@univ-pau.fr"
 
-text_doc = [
-    dl.DashLatex(r"""Here, we consider the solutions of the 
-        Schrödinger equation for a particle of mass $m$ in a box also 
-        known as the infinite potential well. In such a case, the particle 
-        is free to move on a segment of length $L$ : $x\in[0, L]$. 
-        The Schrödinger equation reads"""),
-    dl.DashLatex(r"""$$\begin{aligned}
-            \hat{\mathcal{H}} \phi  & = \varepsilon\phi &
-            \qquad-\frac{\hbar^2}{2m}\frac{d^2\phi}{dx^2} & = \varepsilon \phi
-        \end{aligned}$$""", displayMode=True),
-    html.P("""The solutions of the Schrödinger equation have to
-    satisfy the following boundary conditions along with the 
-    normalisation condition:"""),
-    dl.DashLatex(r"""$$\begin{aligned}\begin{cases}
-                \phi(0) & = 0 \\
-                \phi(L) & = 0 \\
-            \end{cases} & &
-            \qquad\int_0^L \left\vert\phi(x)\right\vert^2 dx & = 1
-        \end{aligned}$$""", displayMode=True),
-    dl.DashLatex(r"""The respect of these conditions, leads to the 
-        quantification of the energy characterized by a quantum number, 
-        $p\in\mathbb{N}^*$. The solutions are labelled by this quantum number  
-        $p$ and are the couples $(\phi_p, \varepsilon_p)$ including the 
-        wavefunctions $\phi_p$ (the eigenvectors) and the energies 
-        $\varepsilon_p$ (the eigenvalues). They read:"""),
-    dl.DashLatex(r"""$$\begin{aligned}
-            \phi_p(x) & = \sqrt{\frac{2}{L}} \sin\left(\frac{p\pi x}{L}\right) &
-            \qquad\varepsilon_p & = \frac{h^2p^2}{8 m L^2}
-        \end{aligned}$$""", displayMode=True),
-]
 
 def phi(x, p=1, L=1):
     """ Wavefunction solution of the infinite well system
@@ -88,7 +54,7 @@ def sample(ntry=100, p=1, L=1):
     return pos
 
 
-def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
+def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
     """ 
     This function produce a plot with the probability density and an
     histogram of the position drawn from this density. The points are
@@ -198,7 +164,7 @@ def infinite_well_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
     )
 
     fig.update_layout(
-        title=f"Infinite potential well wavefunctions: p = {p}",
+        title=f"Particle in a box wavefunctions: p = {p}",
         autosize=True,
         # width=800,
         height=600,
