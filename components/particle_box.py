@@ -105,6 +105,8 @@ def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
         row=1, col=1,
     )
 
+    fig.add_hline(y=0, line=dict(color="#7f7f7f"), row=1, col=1)
+
     fig.add_trace(
         go.Scatter(
             x=pos, y=np.random.normal(0, jitter, ntry),

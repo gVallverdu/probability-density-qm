@@ -21,7 +21,8 @@ NPTS_MAX = 1000
 text_doc = [
     html.H3("Theory: Radial part of atomic orbitals"),
     html.P("""Atomic orbitals are monoelectronic wavefunctions, 
-        solutions of the Schrödinger equation for the hydrogen atom. The 
+        solutions of the Schrödinger equation of an Hydrogenoid system
+        with an atomic number Z. The 
         general expression of the atomic orbital reads"""),
     dl.DashLatex(r"""
     $$
@@ -36,8 +37,22 @@ text_doc = [
         R_{n, \ell}(r) = P_{n,\ell}(r) \exp\left(-\frac{Zr}{n a_o}\right)
     $$
     """, displayMode=True),
-    html.P("Hereafter, the equations of the radial parts for the lowest quantum numbers:"),
+    html.P("Hereafter, are displayed the equations of the radial parts of"
+           " the atomic orbitals for the lowest quantum numbers:"),
     dl.DashLatex(radial_part_equations, displayMode=True),
+    dl.DashLatex("The radial probability density is ususally named "
+                 " $\mathcal{D}(r)$ and reads:"),
+    dl.DashLatex(r"""
+    $$
+        \mathcal{D}(r) = r^2 \vert R_{n,\ell}(r)\vert^2
+    $$""", displayMode=True),
+    dl.DashLatex(r"""Using the radial probability density, the probability
+    to find an electron between two spheres of radius $r_1$ and $r_2$ is
+    is given by:"""),
+    dl.DashLatex(r"""
+        $$
+        P(e^-\in[r_1;r_2]) = \int_{r_1}^{r_2} r^2 \vert R_{n,\ell}(r)\vert^2 dr
+        $$""", displayMode=True),
 ]
 
 
@@ -224,7 +239,7 @@ def display_graph(n, l, integrate_click, rmin, rmax):
             callback_context.triggered[0]["prop_id"] == "run-integration-btn.n_clicks"):
 
         # display the area
-        r = np.linspace(float(rmin), float(rmax), 100)
+        r = np.linspace(float(rmin), float(rmax), 400)
         Dr = r ** 2 * radial_part(r) ** 2
         fig.add_trace(
             go.Scatter(
@@ -246,5 +261,11 @@ def display_graph(n, l, integrate_click, rmin, rmax):
         return fig, result
 
     else:
-        message = "Click on compute button to integrate the radial probability density."
+        message = [
+            html.H4("Integration result"),
+            html.P(
+                "Click on compute the button to integrate the radial probability density.",
+                style={"color": "Gray", "fontStyle": "italic", "fontWeight": 300}
+            )
+        ]
         return fig, message
