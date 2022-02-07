@@ -111,29 +111,52 @@ class AORadialPart:
                 y=wf,
                 mode="lines",
                 name="wavefunction",
-                line=dict(color="#1f77b4")
+                line=dict(color="#1f77b4"),
             )
         )
 
+        # plot probability density
         fig.add_trace(
             go.Scatter(
                 x=r,
                 y=r ** 2 * wf ** 2,
                 mode="lines",
                 name="D(r)",
-                line=dict(color="#ff7f0e")
+                line=dict(color="#ff7f0e"),
+                xaxis="x2"
             )
         )
 
-        fig.add_hline(y=0, line=dict(color="#7f7f7f"))
+        tickvals = [i * BOHR_RADIUS for i in range(1, 29, 3)]
         fig.update_layout(
             title=f"Radial probability density: n = {self.n}, l = {self.l}",
             height=600,  # width=600,
-            xaxis=dict(range=[0, r_max], title="r (A)", gridcolor="LightGray"),
-            yaxis=dict(range=[-.3, 1.05], gridcolor="LightGray"),
+            xaxis=dict(
+                range=[0, r_max], title="r (A)", gridcolor="LightGray",
+                showline=True, linecolor="gray", ticks="inside",
+                tickmode="array", tickvals=tickvals, tickangle=0,
+                ticktext=[f"{i * BOHR_RADIUS:.1f}" for i in range(1, 29, 3)],
+                zeroline=False
+            ),
+            yaxis=dict(
+                range=[-.3, 1.05], gridcolor="LightGray", mirror=True,
+                ticks="inside", linecolor="gray", showline=True,
+                zeroline=True, zerolinecolor="LightGray", zerolinewidth=2
+            ),
+            xaxis2=dict(
+                range=[0, r_max], title_text="r (ua)", showgrid=False,
+                side="top", anchor="x", overlaying="x", title=dict(standoff=0),
+                showline=True, linecolor="gray", ticks="inside",
+                tickmode="array", tickvals=tickvals, tickangle=0,
+                ticktext=[f"{i}ao" for i in range(1, 29, 3)],
+            ),
             plot_bgcolor="white",
             # paper_bgcolor="white",
-            legend=dict(xanchor="right",)
+            legend=dict(
+                xanchor="right", yanchor="top",
+                x=0.95, y=0.95,
+                bordercolor="LightGray", borderwidth=1,
+            )
         )
 
         return fig
