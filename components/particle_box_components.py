@@ -85,7 +85,8 @@ def selector(val_max, title, base_id, value=1, step=1, step_slider=5):
 
 def particle_box_tab():
     return dcc.Tab(
-        label=" Particle in a box", className="fas fa-chart-area custom-tab",
+        label=" Particle in a box", className="fas fa-box custom-tab",
+        value="particle-in-a-box",
         selected_className='custom-tab--selected',
         children=[
             html.Div(className="custom-tab-container", children=[
