@@ -2,6 +2,7 @@
 
 from dash import html
 
+
 def footer(logo_img, logo_url):
     return html.Div(className="footer", children=[
         html.Div(className="row", children=[

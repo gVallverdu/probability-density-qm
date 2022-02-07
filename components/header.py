@@ -5,7 +5,7 @@ from dash import html
 
 def header(title, url, fa_icon=""):
     """ Returns the header layout with a github link icon. 
-    
+
     Args:
         title (str): the title page
         url (str): the url of the github repo

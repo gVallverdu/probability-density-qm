@@ -94,13 +94,13 @@ def particle_box_tab():
                 html.Div(children=[
                     # select p value
                     selector(P_MAX, base_id="p",
-                            title="Value of the quantum number p",),
+                             title="Value of the quantum number p",),
 
                     # select number of point
                     selector(NPTS_MAX, base_id="npts", value=100, step=NPTS_STEP,
-                            step_slider=200, title="Number of points"),
-                    
-                    # 
+                             step_slider=200, title="Number of points"),
+
+                    #
                     html.Div([
                         html.H4("Wavefunction"),
                         dcc.RadioItems(
@@ -121,7 +121,8 @@ def particle_box_tab():
                         html.Button("run", id="replot-btn", n_clicks=0),
                     ]),
                 ],
-                style={"display": "grid", "grid-template-columns": "35% 35% 20% 10%"}
+                    style={"display": "grid",
+                           "grid-template-columns": "35% 35% 20% 10%"}
                 ),
 
                 # plot
@@ -132,7 +133,6 @@ def particle_box_tab():
                 html.Div(className="docs", children=text_doc),
             ])
         ])
-
 
 
 @callback(
@@ -183,6 +183,7 @@ def increase_p(click_plus, click_minus, npts):
 
     else:
         return npts
+
 
 @callback(
     Output("particle-box-graph", 'figure'),

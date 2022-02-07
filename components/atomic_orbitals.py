@@ -4,7 +4,7 @@
 import numpy as np
 import plotly.graph_objects as go
 
-from scipy.constants import h, m_e, physical_constants, angstrom
+from scipy.constants import physical_constants, angstrom
 BOHR_RADIUS = physical_constants["Bohr radius"][0] / angstrom
 
 
@@ -127,8 +127,8 @@ class AORadialPart:
 
         fig.add_hline(y=0, line=dict(color="#7f7f7f"))
         fig.update_layout(
-            title=f"Radial part of atomic orbitals: n = {self.n}, l = {self.l}",
-            height=600, width=600,
+            title=f"Radial probability density: n = {self.n}, l = {self.l}",
+            height=600,  # width=600,
             xaxis=dict(range=[0, r_max], title="r (A)", gridcolor="LightGray"),
             yaxis=dict(range=[-.3, 1.05], gridcolor="LightGray"),
             plot_bgcolor="white",
@@ -175,14 +175,6 @@ class AORadialPart:
         radial = 1 / (768 * np.sqrt(35)) * (Z/ao)**(3/2) * \
             rho**3 * np.exp(- rho / 4)
         return radial
-
-
-r = np.linspace(0, 20, 200)
-np.trapz(r**2 * AORadialPart.radial1s(r)**2, x=r)
-
-
-# Harmoniques spéhriques $Y^m_{\ell}(\theta, \varphi)$
-#
 
 
 class AOAngularPart:

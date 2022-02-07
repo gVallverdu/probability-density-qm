@@ -32,7 +32,7 @@ app.layout = html.Div(className="container", children=[
             pbc.particle_box_tab(),
             ao_radial_components.radial_part_tab(),
         ],
-        value="particle-in-a-box",
+            value="particle-in-a-box",
         ),
     ]),
 

@@ -41,125 +41,210 @@ text_doc = [
 ]
 
 
-def selector(val_max, title, base_id, value=1, step=1, step_slider=5, val_min=1):
+def nl_selector(title, base_id, value=1, val_min=0, val_max=4):
     return html.Div([
-        html.H4(title),
+        dcc.ConfirmDialog(id=f"{base_id}-error-dialog"),
         html.Div([
+            html.Div(
+                [dl.DashLatex(title)],
+                style={"textAlign": "right", "fontSize": "large"}
+            ),
+            html.P(f"{value}", id=f"{base_id}-number",
+                   style={"textAlign": "left", "fontSize": "large"}),
             html.Button(
                 html.Span(className="fas fa-minus-square fa-3x"),
                 id=f"{base_id}-minus-btn", n_clicks=0, className="pm-btn",
-                style={"textAlign": "right"}
-            ),
-            dcc.Slider(
-                id=f"{base_id}-slider",
-                min=val_min, max=val_max, step=step, value=value,
-                marks={i: {"label": str(i)}
-                       for i in range(0, val_max + step_slider, step_slider)},
-                tooltip=dict(placement="bottom",
-                             always_visible=True)
             ),
             html.Button(
                 html.Span(className="fas fa-plus-square fa-3x"),
                 id=f"{base_id}-plus-btn", n_clicks=0, className="pm-btn",
-                style={"textAlign": "left"}
-            )],
+            ),
+        ],
             style={"display": "grid",
-                   "grid-template-columns": "15% 70% 15%"}
-        ),
+                   "grid-template-columns": "30% 30% 20% 20%"}
+        )
     ])
 
 
 def radial_part_tab():
     return dcc.Tab(
-        label=" AO Radial part", className="fas fa-chart-area custom-tab",
+        label=" Radial part of AO", className="fas fa-chart-area custom-tab",
+        value="AO-radial-part",
         selected_className='custom-tab--selected',
         children=[
             html.Div(className="custom-tab-container", children=[
                 html.H3("Atomic orbitals - Radial probability density"),
-                html.Div(children=[
-                    # select n value
-                    selector(val_max=AORadialPart.n_max, base_id="n-radial",
-                             value=1, step=1, step_slider=1,
-                             title="Value of the principal quantum number n",),
-                    # select n value
-                    selector(val_max=AORadialPart.n_max - 1, base_id="l-radial",
-                             value=0, val_min=0, step=1, step_slider=1,
-                             title="Value of the secondary quantum number l",),
+                html.Div([
+                    html.Div([
+                        html.H4("Select quantum numbers"),
+                        html.Div([
+                            # select n value
+                            nl_selector(base_id="n-radial", title=r"$n=\;$ "),
+                            # select l value
+                            nl_selector(base_id="l-radial",
+                                        title=r"$\ell=\;$ ", value=0),
+                        ],
+                            style={"display": "grid",
+                                   "padding": "0 20px",
+                                   "grid-template-columns": "50% 50%"}
+                        ),
+
+                        # plot
+                        dcc.Graph(id="radial-density-graph"),
+                    ]),
+                    html.Div(className="docs", children=[
+                        html.H4("Integrate the radial proability density"),
+                        dl.DashLatex(r"In order to compute the probability $P(V)$"
+                                     " to find an electron between two spheres of radius"
+                                     " $r_1$ and $r_2$, one has to compute the integral"
+                                     " of the radial probability density such as:"),
+                        dl.DashLatex(r"""
+                            $$
+                            P(e^-\in[r_1;r_2]) = \int_{r_1}^{r_2} r^2 \vert R_{n,\ell}(r)\vert^2 dr
+                            $$
+                        """, displayMode=True),
+                        dl.DashLatex(r"Fill in the values of the integration"
+                                     r" boundaries $r_1$ and $r_2$ in $\text{\AA}$ and click on"
+                                     " compute."),
+                        html.Div([
+                            dcc.Input(
+                                id="radial-integrate-minval", type="number", step=.1,
+                                placeholder="r_1", debounce=True, min=0, max=15,
+                            ),
+                            dcc.Input(
+                                id="radial-integrate-maxval", type="number",  # step=.1,
+                                placeholder="r_2", debounce=True, min=0, max=30,
+                            ),
+                            html.Button(
+                                [html.Span(
+                                    className="fas fa-calculator"), " Compute"],
+                                id="run-integration-btn", n_clicks=0,
+                            )
+                        ],
+                            style={"display": "grid", "margin": "20px 0",
+                                   "grid-template-columns": "35% 35% 30%"}
+                        ),
+                        html.Div(id="radial-integration-result")
+                    ],
+                        style={
+                            "border-left": "1px solid LightGray",
+                            "padding-left": "10px",
+                    }
+                    ),
                 ],
                     style={"display": "grid",
-                           "grid-template-columns": "35% 35% 20% 10%"}
+                           "grid-template-columns": "50% 50%"}
                 ),
 
-                # plot
-                html.Div(
-                    dcc.Graph(id="radial-density-graph"),
-                ),
-
+                # docs
                 html.Div(className="docs", children=text_doc),
             ])
         ])
 
 
 @callback(
-    Output("n-radial-slider", "value"),
+    [Output("n-radial-number", "children"),
+     Output("n-radial-error-dialog", "displayed"),
+     Output("n-radial-error-dialog", "message")],
     [Input("n-radial-plus-btn", "n_clicks"),
      Input("n-radial-minus-btn", "n_clicks")],
-    State("n-radial-slider", "value"),
+    State("n-radial-number", "children"),
 )
-def increase_n(click_plus, click_minus, n):
+def increase_n(click_plus, click_minus, n_str):
     ctx = callback_context
+    n = int(n_str)
+
+    n_return = n_str
+    show_message = False
+    message = ""
 
     if ctx.triggered[0]["prop_id"] == "n-radial-plus-btn.n_clicks":
         if n < AORadialPart.n_max:
-            return n + 1
+            n_return = f"{n + 1}"
         else:
-            return n
+            show_message = True
+            message = f"Maxmum value of n is {AORadialPart.n_max}."
 
     elif ctx.triggered[0]["prop_id"] == "n-radial-minus-btn.n_clicks":
         if n > 1:
-            return n - 1
+            n_return = f"{n - 1}"
         else:
-            return n
+            show_message = True
+            message = f"Minimum value of n is 1"
 
-    else:
-        return n
+    return n_return, show_message, message
 
 
 @callback(
-    Output("l-radial-slider", "value"),
+    Output("l-radial-number", "children"),
     [Input("l-radial-plus-btn", "n_clicks"),
      Input("l-radial-minus-btn", "n_clicks"),
-     Input("n-radial-slider", "value")],
-    State("l-radial-slider", "value"),
+     Input("n-radial-number", "children")],
+    State("l-radial-number", "children"),
 )
-def increase_l(click_plus, click_minus, n, l):
+def increase_l(click_plus, click_minus, n_str, l_str):
     ctx = callback_context
+    l = int(l_str)
+    n = int(n_str)
 
     if ctx.triggered[0]["prop_id"] == "l-radial-plus-btn.n_clicks":
         if l < n - 1:
-            return l + 1
+            return f"{l + 1}"
         else:
-            return l
+            return l_str
+            # return dcc.ConfirmDialog("Error value l!")
 
     elif ctx.triggered[0]["prop_id"] == "l-radial-minus-btn.n_clicks":
         if l > 0:
-            return l - 1
+            return f"{l - 1}"
         else:
-            return l
+            return l_str
 
     else:
-        return l
+        return l_str
 
 
 @callback(
-    Output("radial-density-graph", 'figure'),
-    [Input("n-radial-slider", "value"),
-     Input("l-radial-slider", "value")],
+    [Output("radial-density-graph", 'figure'),
+     Output("radial-integration-result", "children")],
+    [Input("n-radial-number", "children"),
+     Input("l-radial-number", "children"),
+     Input("run-integration-btn", "n_clicks")],
+    [State("radial-integrate-minval", "value"),
+     State("radial-integrate-maxval", "value")],
 )
-def display_graph(n, l):
-    """ This function produce the plot from the sliders or the replot
-    button. """
+def display_graph(n, l, integrate_click, rmin, rmax):
+    """ This function produce the plot from the values of n and l and
+    compute the integral, if the button is triggered """
 
-    radial_part = AORadialPart(n, l)
+    radial_part = AORadialPart(int(n), int(l))
+    fig = radial_part.get_plot()
 
-    return radial_part.get_plot()
+    if (rmin is not None and rmax is not None and
+            callback_context.triggered[0]["prop_id"] == "run-integration-btn.n_clicks"):
+
+        # display the area
+        r = np.linspace(float(rmin), float(rmax), 100)
+        Dr = r ** 2 * radial_part(r) ** 2
+        fig.add_trace(
+            go.Scatter(
+                x=r, y=Dr, mode="lines", name="integration",
+                fill="tozeroy", line=dict(color="#ff7f0e")
+            )
+        )
+
+        # compute integration
+        integral = np.trapz(Dr, x=r)
+
+        result = [
+            html.H4("Integration result"),
+            html.P([
+                dl.DashLatex(
+                    rf"$P(e^-\in[{rmin:.1f}\;;\;{rmax:.1f}])$ = {integral:.2f}")
+            ], style={"text-align": "center"})
+        ]
+        return fig, result
+
+    else:
+        message = "Click on compute button to integrate the radial probability density."
+        return fig, message
