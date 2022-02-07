@@ -5,13 +5,15 @@
 */
 
 body {
-    background: #ffffff;
+    background: #f7f7f7;
     font-size:1.5em;
     /* font-family: "Ubuntu", sans-serif; */
+    font-family: "Ubuntu", sans-serif;
 }
 
 .container {
   max-width: 1280px;
+  background-color: white;
   margin: auto;
   padding: 0;
 }
@@ -27,6 +29,9 @@ h4 { font-size: 2.0rem; line-height: 1.35; letter-spacing: -.05rem; margin-botto
 h5 { font-size: 1.6rem; line-height: 1.5;  letter-spacing: -.05rem; margin-bottom: 0.6rem; margin-top: 0.6rem;}
 h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.75rem; margin-top: 0.75rem;}
 
+p {
+    font-size: 1.8rem;
+}
 
 /* Tabs
 -------
@@ -36,8 +41,6 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.7
     font-size: large;
     padding: 10px 25px !important;
     font-weight: normal;
-    /* border-bottom: 1px solid lightgrey !important; */
-    /* color: rgb(100, 100, 100); */
 }
 
 .custom-tab--selected {
@@ -46,7 +49,7 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.7
     box-shadow: 1px 1px 0px white;
     border-top: 2px solid #3c6382 !important;
     color:  #3c6382 !important;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .custom-tab-container {
@@ -54,11 +57,6 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; margin-bottom: 0.7
     border-left: 1px solid lightgrey !important;
     border-right: 1px solid lightgrey !important;
     border-bottom: 1px solid lightgrey !important;
-}
-
-h3.tab-title {
-    border-bottom: solid 2px #3c6382;
-    padding-top: 30px;
 }
 
 
@@ -81,28 +79,32 @@ h3.tab-title {
 }
 
 .header {
-    /* padding-top: 20px;
-    padding-bottom: 20px;
-    color: #fff;
-    background-color: #3c6382;
-    text-align: center; */
-    border-bottom: solid 2px #3c6382;
+    padding: 20px 20px;
+    /* height: 60px; */
 }
 
 .header h1 {
     color: #3c6382;
     font-size: 2em;
+    font-weight: 400;
+    /* text-shadow: 1px 1px 1px #3c63829f; */
 }
 
 /* footer
 ---------
 */
 .footer {
-    /* border-top: solid 2px #7f8c8d; */
-    margin-top: 10px;
+    padding: 10px 30px;
+    background-color: #f7f7f7;
+}
+
+.footer p {
     font-size: small;
 }
 
+/* various
+---------
+*/
 .pm-btn {
     /* line-height: 1.8em; */
     /* vertical-align: middle; */
@@ -113,7 +115,11 @@ h3.tab-title {
 }
 
 .docs {
-    font-size: large;
+    font-size: 1.8rem;
 }
 
+.docs h3 {
+    font-weight: 400;
+    border-bottom: 2px solid #3c6382;
+}
 

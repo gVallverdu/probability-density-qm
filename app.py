@@ -13,10 +13,11 @@ from components import ao_radial_components
 # ------------------------------------------------------------------------------
 external_stylesheets = [
     'https://codepen.io/chriddyp/pen/bWLwgP.css',
+    "https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap",
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
 ]
 
-TITLE = "Probability density - Quantum chemistry"
+TITLE = "Probability Density and Quantum Chemistry"
 URL = "https://github.com/gVallverdu/probability-density-qm"
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -30,7 +31,9 @@ app.layout = html.Div(className="container", children=[
         dcc.Tabs([
             pbc.particle_box_tab(),
             ao_radial_components.radial_part_tab(),
-        ]),
+        ],
+        value="particle-in-a-box",
+        ),
     ]),
 
     footer(
