@@ -123,11 +123,11 @@ def radial_part_tab():
                                      " compute."),
                         html.Div([
                             dcc.Input(
-                                id="radial-integrate-minval", type="number", step=.1,
+                                id="radial-integrate-minval", type="number",
                                 placeholder="r_1", debounce=True, min=0, max=15,
                             ),
                             dcc.Input(
-                                id="radial-integrate-maxval", type="number",  # step=.1,
+                                id="radial-integrate-maxval", type="number",
                                 placeholder="r_2", debounce=True, min=0, max=30,
                             ),
                             html.Button(
