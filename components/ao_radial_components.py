@@ -6,7 +6,7 @@ import dash_latex as dl
 import plotly.graph_objects as go
 
 import numpy as np
-from .atomic_orbitals import AORadialPart, radial_part_equations
+from .ao_radial import AORadialPart, radial_part_equations
 
 """ This module implements the components for radial probability density tab """
 
