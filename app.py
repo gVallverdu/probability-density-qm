@@ -6,8 +6,7 @@ from dash.dependencies import Input, Output, State
 from dash import dcc, html
 
 from components import header, footer
-from components import particle_box_components as pbc
-from components import ao_radial_components
+from components import particle_box_components, ao_radial_components, ao_angular_components
 
 # Set up app
 # ------------------------------------------------------------------------------
@@ -17,7 +16,7 @@ external_stylesheets = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css",
 ]
 
-TITLE = "Probability Density and Quantum Chemistry"
+TITLE = "Wavefunctions and atomic orbitals in Quantum Chemistry"
 URL = "https://github.com/gVallverdu/probability-density-qm"
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -29,8 +28,9 @@ app.layout = html.Div(className="container", children=[
 
     html.Div([
         dcc.Tabs([
-            pbc.particle_box_tab(),
+            particle_box_components.particle_box_tab(),
             ao_radial_components.radial_part_tab(),
+            ao_angular_components.angular_part_tab(),
         ],
             value="particle-in-a-box",
         ),

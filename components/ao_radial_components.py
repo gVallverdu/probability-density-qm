@@ -13,8 +13,6 @@ from .ao_radial import AORadialPart, radial_part_equations
 __author__ = "Germain Salvato Vallverdu"
 __email__ = "germain.vallverdu@univ-pau.fr"
 
-# parameter
-NPTS_MAX = 1000
 
 # Documentation of this tab
 # --------------------------
