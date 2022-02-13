@@ -33,6 +33,8 @@ app.layout = html.Div(className="container", children=[
             ao_angular_components.angular_part_tab(),
         ],
             value="particle-in-a-box",
+            # value="AO-radial-part",
+            # value="AO-angular-part",
         ),
     ]),
 

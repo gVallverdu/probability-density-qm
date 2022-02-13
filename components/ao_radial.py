@@ -81,7 +81,7 @@ class AORadialPart:
         """ compute the AO radial part """
         return self._radial(r, Z, ao)
 
-    def get_plot(self, r_max=15, npts=400, Z=1, ao=BOHR_RADIUS):
+    def get_plot(self, r_max=15, npts=400, Z=1, ao=BOHR_RADIUS, show_wf=True):
         """ Return a plotly plot of the radial density and the wavefunction """
 
         r = np.linspace(0, r_max, npts)
@@ -90,15 +90,26 @@ class AORadialPart:
         fig = go.Figure()
 
         # plot wavefunction
-        fig.add_trace(
-            go.Scatter(
-                x=r,
-                y=wf,
-                mode="lines",
-                name="wavefunction",
-                line=dict(color="#1f77b4"),
+        if show_wf:
+            y_range = [-.3, 1.05]
+            fig.add_trace(
+                go.Scatter(
+                    x=r,
+                    y=wf,
+                    mode="lines",
+                    name="wavefunction",
+                    line=dict(color="#1f77b4"),
+                )
             )
-        )
+        else:
+            # add an empty trace to still display two axes
+            fig.add_trace(
+                go.Scatter(
+                    x=[],
+                    y=[],
+                    showlegend=False,
+                )
+            )
 
         # plot probability density
         fig.add_trace(
@@ -108,14 +119,15 @@ class AORadialPart:
                 mode="lines",
                 name="D(r)",
                 line=dict(color="#ff7f0e"),
-                xaxis="x2"
+                xaxis="x2",
+                showlegend=True,
             )
         )
 
         tickvals = [i * BOHR_RADIUS for i in range(1, 29, 3)]
         fig.update_layout(
             title=f"Radial probability density: n = {self.n}, l = {self.l}",
-            height=600,  # width=600,
+            height=600,
             xaxis=dict(
                 range=[0, r_max], title="r (A)", gridcolor="LightGray",
                 showline=True, linecolor="gray", ticks="inside",
@@ -124,7 +136,7 @@ class AORadialPart:
                 zeroline=False
             ),
             yaxis=dict(
-                range=[-.3, 1.05], gridcolor="LightGray", mirror=True,
+                gridcolor="LightGray", mirror=True,
                 ticks="inside", linecolor="gray", showline=True,
                 zeroline=True, zerolinecolor="LightGray", zerolinewidth=2
             ),

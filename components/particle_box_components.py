@@ -2,9 +2,10 @@
 
 from dash import html, dcc, callback, callback_context
 from dash.dependencies import Input, Output, State
+import dash_daq as daq
 import dash_latex as dl
 
-from .particle_box import particle_box_plot
+from . import particle_box
 
 """ This module implements the components for the particle in a box
 (infinite well) tab. """
@@ -90,6 +91,7 @@ def particle_box_tab():
         selected_className='custom-tab--selected',
         children=[
             html.Div(className="custom-tab-container", children=[
+                dcc.Store(id="particle-in-a-box-data"),
                 html.H3("Particle in a box system"),
                 html.Div(children=[
                     # select p value
@@ -103,26 +105,27 @@ def particle_box_tab():
                     #
                     html.Div([
                         html.H4("Wavefunction"),
-                        dcc.RadioItems(
-                            id="show_wf",
-                            options=[
-                                dict(label="Show", value="Show"),
-                                dict(label="Hide", value="Hide"),
-                            ],
-                            value="Hide",
-                            labelStyle={'display': 'inline-block'},
-                            inputStyle={"margin-left": "10px"}
+                        html.Div([
+                            daq.BooleanSwitch(id="show-wf", on=False),
+                            html.P("Off", id="show-wf-text"),
+                        ],
+                            style={"display": "grid",
+                                   "grid-template-columns": "50% 50%"}
                         ),
-                    ]),
+                    ],
+                        style={"textAlign": "center"},
+                    ),
 
                     # replot button
                     html.Div([
                         html.H4("Replot"),
                         html.Button("run", id="replot-btn", n_clicks=0),
-                    ]),
+                    ],
+                        style={"textAlign": "center"},
+                    ),
                 ],
                     style={"display": "grid",
-                           "grid-template-columns": "35% 35% 20% 10%"}
+                           "grid-template-columns": "35% 35% 15% 15%"}
                 ),
 
                 # plot
@@ -186,18 +189,43 @@ def increase_p(click_plus, click_minus, npts):
 
 
 @callback(
-    Output("particle-box-graph", 'figure'),
+    [Output("particle-box-graph", 'figure'),
+     Output("show-wf-text", "children"),
+     Output("particle-in-a-box-data", "data")],
     [Input("p-slider", "value"),
      Input("npts-slider", "value"),
      Input("replot-btn", "n_clicks"),
-     Input("show_wf", "value")],
+     Input("show-wf", "on")],
+    State("particle-in-a-box-data", "data"),
 )
-def display_graph(p, ntry, n_clicks, show_wf):
-    """ This function produce the plot from the sliders or the replot
+def display_graph(p, ntry, n_clicks, show_wf, data):
+    """ This callback produce the plot from the sliders or the replot
     button. """
+
+    ctx = callback_context
 
     # params
     L = 1
     jitter = .5
 
-    return particle_box_plot(p, L=L, ntry=ntry, jitter=jitter, show_wf=show_wf)
+    # switch label
+    text = "On" if show_wf else "Off"
+
+    # replot from current data or not
+    if ctx.triggered[0]["prop_id"] == "show-wf.on":
+        # p and ntry did not change, just replot with or without wf
+        fig = particle_box.plot(
+            p, L=L, ntry=ntry, jitter=jitter, show_wf=show_wf,
+            pos=data["pos"], pos_y=data["pos_y"]
+        )
+    else:
+        # p or ntry changed, or replot => update data
+        pos, pos_y = particle_box.compute_data(
+            p, L=L, ntry=ntry, jitter=jitter)
+        data = dict(pos=pos, pos_y=pos_y)
+        fig = particle_box.plot(
+            p, L=L, ntry=ntry, jitter=jitter, show_wf=show_wf,
+            pos=pos, pos_y=pos_y
+        )
+
+    return fig, text, data

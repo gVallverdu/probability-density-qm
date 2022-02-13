@@ -3,6 +3,7 @@
 from dash import html, dcc, callback
 from dash.dependencies import Input, Output
 import dash_latex as dl
+import dash_daq as daq
 
 from .ao_angular import angular_part_equations, angular_part_data, get_polar_plot
 
@@ -57,8 +58,8 @@ def angular_part_tab():
             html.Div(className="custom-tab-container", children=[
                 html.H3("Atomic orbitals - Shape of angular functions"),
                 html.Div([
-                    html.H4("Select the angular part:"),
                     html.Div([
+                        html.H4("Angular part:"),
                         # select n value
                         dcc.Dropdown(
                             options=[k for k in angular_part_data],
@@ -67,20 +68,38 @@ def angular_part_tab():
                             placeholder="Select an angular part",
                             value="ns",
                         ),
+                    ]),
+                    html.Div([
+                        html.H4("Wavefunction"),
+                        html.Div([
+                            daq.BooleanSwitch(id="angular-show-wf", on=True),
+                            html.P(id="angular-show-wf-text"),
+                        ],
+                            style={"display": "grid",
+                                   "grid-template-columns": "40% 60%"}
+                        ),
+                    ],
+                        style={"margin-left": "10px"},
+                    ),
+                    html.Div([
+                        html.H4("Angular part expression"),
                         html.Div(
                             id="angular-part-text",
                             className="docs",
-                            style={"padding-left": "20px"})
+                        ),
                     ],
                         style={
-                            "display": "grid",
-                            "grid-template-columns": "30% 70%"
-                    }
+                            "padding-left": "10px",
+                            "border-left": "solid 1px LightGray"}
                     ),
+                ],
+                    style={
+                        "display": "grid",
+                        "grid-template-columns": "20% 20% 60%"}
+                ),
 
-                    # plot
-                    dcc.Graph(id="angular-part-polar-graph"),
-                ]),
+                # plot
+                dcc.Graph(id="angular-part-polar-graph"),
 
                 # docs
                 html.Div(className="docs", children=text_doc),
@@ -90,14 +109,18 @@ def angular_part_tab():
 
 @callback(
     [Output("angular-part-polar-graph", 'figure'),
-     Output("angular-part-text", "children")],
-    Input("angular-part-dropdown", "value"),
+     Output("angular-part-text", "children"),
+     Output("angular-show-wf-text", "children")],
+    [Input("angular-part-dropdown", "value"),
+     Input("angular-show-wf", "on")],
 )
-def display_graph(angular_part_name):
+def display_graph(angular_part_name, show_wf):
     """ This function produce the polar plot from the dropdown selection """
 
     text = [
         dl.DashLatex(angular_part_data[angular_part_name]["text"]),
     ]
 
-    return get_polar_plot(angular_part_name), text
+    wf_text = "Wavefunction" if show_wf else "Density"
+
+    return get_polar_plot(angular_part_name, show_wf=show_wf), text, wf_text

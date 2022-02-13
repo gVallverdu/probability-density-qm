@@ -54,7 +54,7 @@ def sample(ntry=100, p=1, L=1):
     return pos
 
 
-def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
+def compute_data(p=1, L=1, ntry=100, jitter=.5):
     """ 
     This function produce a plot with the probability density and an
     histogram of the position drawn from this density. The points are
@@ -65,7 +65,28 @@ def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
         p (int): the quatum number
         L (float): the length of the box
         ntry (int): the number of sampled points
-        nbins (int): number of bins for histogram plot
+        jitter (float): dispersion along y for points representation
+
+    Returns:
+        pos and pos_y, the (x, y) coordinates of points
+    """
+    pos = sample(ntry, p, L)
+    pos_y = np.random.normal(0, jitter, ntry)
+
+    return pos, pos_y
+
+
+def plot(p=1, L=1, ntry=100, jitter=.5, show_wf=False, pos=None, pos_y=None):
+    """ 
+    This function produce a plot with the probability density and an
+    histogram of the position drawn from this density. The points are
+    depicted in a subplot with a random dispersion on the vertical 
+    direction.
+
+    Args:
+        p (int): the quatum number
+        L (float): the length of the box
+        ntry (int): the number of sampled points
         jitter (float): dispersion along y for points representation
         show_wf (bool): if True the wavefunction is plotted
 
@@ -75,7 +96,9 @@ def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
 
     # data
     x = np.linspace(0, L, 500)
-    pos = sample(ntry, p)
+
+    if pos is None or pos_y is None:
+        pos, pos_y = compute_data(p, L, ntry, jitter)
 
     # fig = go.Figure()
     fig = make_subplots(
@@ -87,7 +110,6 @@ def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
     fig.add_trace(go.Histogram(
         x=pos,
         opacity=.4,
-        # nbinsx=nbins,
         histnorm="probability density",
         marker_color="#1f77b4",
         name="histogram",
@@ -109,7 +131,7 @@ def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
 
     fig.add_trace(
         go.Scatter(
-            x=pos, y=np.random.normal(0, jitter, ntry),
+            x=pos, y=pos_y,
             mode="markers",
             marker_color="#7f7f7f",
             opacity=.6,
@@ -135,7 +157,7 @@ def particle_box_plot(p=1, L=1, ntry=100, nbins=30, jitter=.5, show_wf=False):
             )
         )
 
-    if show_wf == "Show":
+    if show_wf:
         fig.add_trace(
             go.Scatter(
                 x=x, y=phi(x, p, L),

@@ -93,11 +93,13 @@ angular_part_data = {
         function=Y00, nodal_angles=[], label=r"$ns$",
         l_m_l=(0, 0),
         text=r"AO $ns$ with function $Y_{0}^{0}(\theta, \varphi)$: $\ell = 0$ and $m_{\ell}=0$, no nodal plane."
+        # text=[r"AO $ns$ with function $Y_{0}^{0}(\theta, \varphi)$", r"$\ell = 0$ and $m_{\ell}=0$", r"no nodal plane."]
     ),
     "npz": dict(
         function=Y10, label=f"$np_z", nodal_angles=[np.pi / 2],
         l_m_l=(1, 0),
         text=r"AO $np_z$ with function $Y_{1}^{0}(\theta, \varphi)$: $\ell = 1$ and $m_{\ell}=0$, 1 nodal plane."
+        # text=[r"AO $np_z$ with function $Y_{1}^{0}(\theta, \varphi)$", r"$\ell = 1$ and $m_{\ell}=0$", r"$1$ nodal plane."]
     ),
     "npx": dict(
         function=Y11x, nodal_angles=[0], value=r"$np_x$",
@@ -188,25 +190,38 @@ def angular(theta, phi=0, l=0, m_l=0):
 # ----------------------------------
 
 
-def get_polar_plot(name="ns", step=1):
-    """ Produce a plotly figure with polar axes in the (x, z) plane """
+def get_polar_plot(name="ns", step=1, show_wf=True):
+    """ Produce a plotly figure with polar axes in the (x, z) plane 
+
+    Args:
+        name (str): Name of the angular part
+        step (int, float): step for theta values range
+        show_wf (bool): if True, show the wavefunction, else show the angular density
+    """
 
     # get l, m_l values
     l, m_l = angular_part_data[name]["l_m_l"]
 
     # compute r, theta values
     theta = np.radians(np.arange(0, 360 + step, step))
-    # phi = np.zeros(theta.shape)
-    # print("theta", theta)
-    angular_values = angular_part_data[name]["function"](theta, phi=0)
+
+    # compute wavefunction
+    wf = angular_part_data[name]["function"](theta, phi=0)
+    if name == "ns":
+        wf = np.ones(theta.shape) * wf
+
+    if show_wf:
+        angular_values = wf
+        maxval = np.max(np.abs(angular_values))
+    else:
+        angular_values = wf ** 2
+        maxval = np.max(angular_values)
 
     # split positive and negative part
-    if name == "ns":
-        angular_values = np.ones(theta.shape) * angular_values
-    ix_p = np.where(angular_values > 0)
-    ix_n = np.where(angular_values <= 0)
+    ix_p = np.where(angular_values >= 0)
+    ix_n = np.where(angular_values < 0)
 
-    r_range = [0, 0.8]
+    r_range = [0, 1.1 * maxval]
     fig = go.Figure()
 
     fig.add_trace(
@@ -222,6 +237,11 @@ def get_polar_plot(name="ns", step=1):
         )
     )
 
+    if show_wf:
+        pos_name = "positive part"
+    else:
+        pos_name = "Probability density"
+
     fig.add_trace(
         go.Scatterpolar(
             r=angular_values[ix_p],
@@ -229,7 +249,7 @@ def get_polar_plot(name="ns", step=1):
             thetaunit="radians",
             mode='lines', fill="toself", fillcolor="rgba(178, 34, 34, .25)",
             line=dict(color="FireBrick"),
-            name="positive part",
+            name=pos_name,
         )
     )
 
@@ -247,6 +267,7 @@ def get_polar_plot(name="ns", step=1):
 
     fig.update_layout(
         showlegend=True,
+        legend=dict(xanchor="right"),
         height=800,
         title="Representation of the spherical harmonic in the (xOz) plane.",
         polar=dict(
@@ -256,7 +277,7 @@ def get_polar_plot(name="ns", step=1):
                 showline=True, linecolor="Gray", linewidth=2, gridwidth=2,
             ),
             radialaxis=dict(
-                gridcolor="LightGray", showgrid=True,
+                gridcolor="LightGray", showgrid=True, showline=False,
                 range=r_range,
             ),
             bgcolor="white",
