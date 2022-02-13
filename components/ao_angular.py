@@ -92,13 +92,13 @@ angular_part_data = {
     "ns": dict(
         function=Y00, nodal_angles=[], label=r"$ns$",
         l_m_l=(0, 0),
-        text=r"AO $ns$ with function $Y_{0}^{0}(\theta, \varphi)$: $\ell = 0$ and $m_{\ell}=0$, no nodal plane."
+        text=r"AO $ns$ with function $Y_{0}^{0}(\theta, \varphi)$: $\ell = 0$ and $m_{\ell}=0$ ; Number of nodal planes: 0"
         # text=[r"AO $ns$ with function $Y_{0}^{0}(\theta, \varphi)$", r"$\ell = 0$ and $m_{\ell}=0$", r"no nodal plane."]
     ),
     "npz": dict(
         function=Y10, label=f"$np_z", nodal_angles=[np.pi / 2],
         l_m_l=(1, 0),
-        text=r"AO $np_z$ with function $Y_{1}^{0}(\theta, \varphi)$: $\ell = 1$ and $m_{\ell}=0$, 1 nodal plane."
+        text=r"AO $np_z$ with function $Y_{1}^{0}(\theta, \varphi)$: $\ell = 1$ and $m_{\ell}=0$ ; Number of nodal planes: 1"
         # text=[r"AO $np_z$ with function $Y_{1}^{0}(\theta, \varphi)$", r"$\ell = 1$ and $m_{\ell}=0$", r"$1$ nodal plane."]
     ),
     "npx": dict(
@@ -106,14 +106,14 @@ angular_part_data = {
         l_m_l=(1, 1), label=r"$np_x$",
         text=(r"AO $np_x$ with function "
               r"$\frac{1}{\sqrt{2}}\Big(Y_{1}^{1}(\theta, \varphi) + Y_{1}^{-1}(\theta, \varphi)\Big)$"
-              r": $\ell = 1$ and $m_{\ell}=\pm 1$, 1 nodal plane.")
+              r": $\ell = 1$ and $m_{\ell}=\pm 1$ ; Number of nodal planes: 1")
     ),
     "ndz2": dict(
         function=Y20,
         label=r"$nd_{z^2}$",
         l_m_l=(2, 0),
         nodal_angles=[np.arccos(1 / np.sqrt(3)), -np.arccos(1 / np.sqrt(3))],
-        text=r"AO $nd_{z^2}$ with function $Y_{2}^{0}(\theta, \varphi)$: $\ell = 2$ and $m_{\ell}=0$, 2 nodal planes."
+        text=r"AO $nd_{z^2}$ with function $Y_{2}^{0}(\theta, \varphi)$: $\ell = 2$ and $m_{\ell}=0$ ; Number of nodal planes: 2"
     ),
     "ndxy": dict(
         function=Y21xz,
@@ -122,7 +122,7 @@ angular_part_data = {
         nodal_angles=[0, np.pi / 2],
         text=(r"AO $nd_{xz}$ with function "
               r"$\frac{1}{\sqrt{2}}\Big(Y_{2}^{-1}(\theta, \varphi) - Y_{2}^{1}(\theta, \varphi)\Big)$"
-              r": $\ell = 2$ and $m_{\ell}=\pm 2$, 2 nodal planes.")
+              r": $\ell = 2$ and $m_{\ell}=\pm 2$ ; Number of nodal planes: 2")
     ),
     "nfz3": dict(
         function=Y30,
@@ -130,7 +130,7 @@ angular_part_data = {
         label=r"$nf_{z^3}$",
         nodal_angles=[np.pi / 2,
                       np.arccos(np.sqrt(3 / 5)), -np.arccos(np.sqrt(3 / 5))],
-        text=r" AO $nf_{z^3}$ with function $Y_{3}^{0}(\theta, \varphi)$: $\ell = 3$ and $m_{\ell}=0$, 3 nodal planes."
+        text=r" AO $nf_{z^3}$ with function $Y_{3}^{0}(\theta, \varphi)$: $\ell = 3$ and $m_{\ell}=0$ ; Number of nodal planes: 3"
     ),
     "nfxz2": dict(
         function=Y31xz2,
@@ -139,7 +139,7 @@ angular_part_data = {
         nodal_angles=[0, np.arccos(np.sqrt(1/5)), -np.arccos(np.sqrt(1/5))],
         text=(r"AO $nf_{xz^2}$ with function "
               r"$\frac{1}{\sqrt{2}}\Big(Y_{3}^{-1}(\theta, \varphi) - Y_{3}^{1}(\theta, \varphi)\Big)$"
-              r": $\ell = 2$ and $m_{\ell}=\pm 1$, 3 nodal planes.")
+              r": $\ell = 2$ and $m_{\ell}=\pm 1$ ; Number of nodal planes: 3")
     ),
 }
 

@@ -118,7 +118,7 @@ def display_graph(angular_part_name, show_wf):
     """ This function produce the polar plot from the dropdown selection """
 
     text = [
-        dl.DashLatex(angular_part_data[angular_part_name]["text"]),
+        html.P(dl.DashLatex(text)) for text in angular_part_data[angular_part_name]["text"].split(";")
     ]
 
     wf_text = "Wavefunction" if show_wf else "Density"
