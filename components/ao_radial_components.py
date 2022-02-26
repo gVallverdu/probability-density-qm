@@ -36,6 +36,8 @@ text_doc = [
         R_{n, \ell}(r) = P_{n,\ell}(r) \exp\left(-\frac{Zr}{n a_o}\right)
     $$
     """, displayMode=True),
+    dl.DashLatex(
+        r"""where $a_o$ is the Bohr radius: $a_o=0.529\AA=52.9\text{ pm}$."""),
     html.P("Hereafter, are displayed the equations of the radial parts of"
            " the atomic orbitals for the lowest quantum numbers:"),
     dl.DashLatex(radial_part_equations, displayMode=True),
@@ -59,31 +61,22 @@ def nl_selector(title, base_id, value=1, val_min=0, val_max=4):
     return html.Div([
         dcc.ConfirmDialog(id=f"{base_id}-error-dialog"),
         html.Div([
-            html.Div([
-                html.Div(
-                    [dl.DashLatex(title)],
-                    style={"textAlign": "right", "fontSize": "large"}
-                ),
-                html.Span(f"{value}", id=f"{base_id}-number",
-                          style={"textAlign": "left", "fontSize": "large"}),
-            ],
-                style={"display": "grid",
-                       "grid-template-columns": "50% 50%"}
+            dl.DashLatex(title),
+            html.Span(f"{value}", id=f"{base_id}-number"),
+            html.Button(
+                html.Span(
+                    className="fas fa-minus-square fa-3x",
+                    style={"vertical-align": "top"}),
+                id=f"{base_id}-minus-btn", n_clicks=0, className="pm-btn",
             ),
-            html.Div([
-                html.Button(
-                    html.Span(className="fas fa-minus-square fa-3x"),
-                    id=f"{base_id}-minus-btn", n_clicks=0, className="pm-btn",
-                ),
-                html.Button(
-                    html.Span(className="fas fa-plus-square fa-3x"),
-                    id=f"{base_id}-plus-btn", n_clicks=0, className="pm-btn",
-                ),
-            ])
+            html.Button(
+                html.Span(
+                    className="fas fa-plus-square fa-3x",
+                    style={"vertical-align": "top"}),
+                id=f"{base_id}-plus-btn", n_clicks=0, className="pm-btn",
+            ),
         ],
-            style={"display": "grid",
-                   "margin-right": "20px",
-                   "grid-template-columns": "40% 60%"}
+            style={"display": "inline", "fontSize": "large"},
         )
     ])
 
@@ -116,6 +109,7 @@ def selection_layout():
     ],
         style={"display": "grid",
                "padding": "0 20px",
+               "margin-bottom": "20px",
                "grid-template-columns": "70% 30%"}
     )
 
@@ -145,9 +139,12 @@ def integration_layout():
                 placeholder="r_2", debounce=True, min=0, max=30,
             ),
             html.Button(
-                [html.Span(
-                    className="fas fa-calculator"), " Compute"],
+                [
+                    html.Span(className="fas fa-calculator"),
+                    " Compute"
+                ],
                 id="run-integration-btn", n_clicks=0,
+                style={"padding": "0 10px"}
             )
         ],
             style={"display": "grid", "margin": "20px 0",
@@ -174,6 +171,8 @@ def radial_part_tab():
                     # Left part: select n and l
                     html.Div([
                         selection_layout(),
+                        dl.DashLatex(
+                            r"""$a_o$ is the Bohr radius: $a_o=0.529\text{\AA} = 52.9 \text{pm}$."""),
                         dcc.Graph(id="radial-density-graph"),
                     ]),
 
