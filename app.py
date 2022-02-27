@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output, State
 from dash import dcc, html
 
 from components import header, footer
-from components import particle_box_components, ao_radial_components, ao_angular_components
+from components import (particle_box_components, ao_radial_components, ao_angular_components, ao_components)
 
 # Set up app
 # ------------------------------------------------------------------------------
@@ -31,10 +31,12 @@ app.layout = html.Div(className="container", children=[
             particle_box_components.particle_box_tab(),
             ao_radial_components.radial_part_tab(),
             ao_angular_components.angular_part_tab(),
+            ao_components.atomic_orbital_tab(),
         ],
             value="particle-in-a-box",
             # value="AO-radial-part",
             # value="AO-angular-part",
+            # value="atomic-orbitals",
         ),
     ]),
 
