@@ -11,7 +11,8 @@ from scipy.constants import physical_constants, angstrom
 BOHR_RADIUS = physical_constants["Bohr radius"][0] / angstrom
 
 
-""" This module implements ... """
+""" This module implements functions to compute atomic orbitals 
+combining radial and angular part. """
 
 __author__ = "Germain Salvato Vallverdu"
 __email__ = "germain.vallverdu@univ-pau.fr"
@@ -166,7 +167,8 @@ def get_plot(ao_name, points=None, wf=None, ntry=1000, show_sign=False,
             mode="markers",
             marker_color="#7f7f7f",
             opacity=.6,
-            showlegend=False,
+            name="density",
+            showlegend=True,
             hoverinfo="skip"
         ))
 
