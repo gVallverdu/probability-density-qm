@@ -91,9 +91,11 @@ def atomic_orbital_tab():
                         ),
                     ]),
                     html.Div([
-                        html.H4("Replot", style={"padding-left": "10px"}),
+                        html.H4("Replot"),
                         html.Button("run", id="ao-replot-btn", n_clicks=0),
-                    ]),
+                    ],
+                        style={"textAlign": "center"},
+                    ),
                 ],
                     style={
                         "display": "grid",

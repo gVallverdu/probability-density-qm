@@ -56,30 +56,38 @@ text_doc = [
 ]
 
 
-def selector(val_max, title, base_id, value=1, step=1, step_slider=5):
+def p_selector(title, base_id, value=1):
     return html.Div([
-        html.H4(title),
+        html.H4("Select the quantum number: p"),
         html.Div([
             html.Button(
-                html.Span(className="fas fa-minus-square fa-3x"),
+                html.Span(
+                    className="fas fa-minus-square fa-3x",
+                    style={"vertical-align": "top"}),
                 id=f"{base_id}-minus-btn", n_clicks=0, className="pm-btn",
-                style={"textAlign": "right"}
-            ),
-            dcc.Slider(
-                id=f"{base_id}-slider",
-                min=1, max=val_max, step=step, value=value,
-                marks={i: {"label": str(i)}
-                       for i in range(0, val_max + step_slider, step_slider)},
-                tooltip=dict(placement="bottom",
-                             always_visible=True)
             ),
             html.Button(
-                html.Span(className="fas fa-plus-square fa-3x"),
+                html.Span(
+                    className="fas fa-plus-square fa-3x",
+                    style={"vertical-align": "top"}),
                 id=f"{base_id}-plus-btn", n_clicks=0, className="pm-btn",
-                style={"textAlign": "left"}
-            )],
-            style={"display": "grid",
-                   "grid-template-columns": "15% 70% 15%"}
+            ),
+            dl.DashLatex(title),
+            html.Span(f"{value:3d}", id=f"{base_id}-number"),
+        ],
+            style={"display": "inline", "fontSize": "large"},
+        )
+    ])
+
+def npts_selector(val_max, title, base_id, value=1, step=1, step_slider=5):
+    return html.Div([
+        html.H4(title),
+        dcc.Slider(
+            id=f"{base_id}-slider",
+            min=1, max=val_max, step=1, value=value,
+            marks={i: {"label": str(i)}
+                    for i in range(1, val_max + step_slider, step_slider)},
+            tooltip=dict(placement="bottom", always_visible=True)
         ),
     ])
 
@@ -95,12 +103,11 @@ def particle_box_tab():
                 html.H3("Particle in a box system"),
                 html.Div(children=[
                     # select p value
-                    selector(P_MAX, base_id="p",
-                             title="Value of the quantum number p",),
-
+                    p_selector(base_id="p", title=r"$p=\;$"),
                     # select number of point
-                    selector(NPTS_MAX, base_id="npts", value=100, step=NPTS_STEP,
-                             step_slider=200, title="Number of points"),
+                    npts_selector(
+                        NPTS_MAX, base_id="npts", value=100, step=NPTS_STEP,
+                        step_slider=200, title="Number of points"),
 
                     #
                     html.Div([
@@ -112,9 +119,7 @@ def particle_box_tab():
                             style={"display": "grid",
                                    "grid-template-columns": "50% 50%"}
                         ),
-                    ],
-                        style={"textAlign": "center"},
-                    ),
+                    ]),
 
                     # replot button
                     html.Div([
@@ -125,7 +130,7 @@ def particle_box_tab():
                     ),
                 ],
                     style={"display": "grid",
-                           "grid-template-columns": "35% 35% 15% 15%"}
+                           "grid-template-columns": "30% 40% 15% 15%"}
                 ),
 
                 # plot
@@ -139,72 +144,49 @@ def particle_box_tab():
 
 
 @callback(
-    Output("p-slider", "value"),
+    Output("p-number", "children"),
     [Input("p-plus-btn", "n_clicks"),
      Input("p-minus-btn", "n_clicks")],
-    State("p-slider", "value"),
+    State("p-number", "children"),
 )
-def increase_p(click_plus, click_minus, p):
+def increase_p(click_plus, click_minus, p_str):
     ctx = callback_context
+    p = int(p_str)
 
     if ctx.triggered[0]["prop_id"] == "p-plus-btn.n_clicks":
         if p < P_MAX:
-            return p + 1
+            return f"{p + 1:2d}"
         else:
-            return p
+            return p_str
 
     elif ctx.triggered[0]["prop_id"] == "p-minus-btn.n_clicks":
         if p > 1:
-            return p - 1
+            return f"{p - 1:2d}"
         else:
-            return p
+            return p_str
 
     else:
-        return p
-
-
-@callback(
-    Output("npts-slider", "value"),
-    [Input("npts-plus-btn", "n_clicks"),
-     Input("npts-minus-btn", "n_clicks")],
-    State("npts-slider", "value"),
-)
-def increase_p(click_plus, click_minus, npts):
-    ctx = callback_context
-
-    if ctx.triggered[0]["prop_id"] == "npts-plus-btn.n_clicks":
-        if npts < NPTS_MAX:
-            return npts + NPTS_STEP
-        else:
-            return npts
-
-    elif ctx.triggered[0]["prop_id"] == "npts-minus-btn.n_clicks":
-        if npts > NPTS_STEP:
-            return npts - NPTS_STEP
-        else:
-            return npts
-
-    else:
-        return npts
+        return p_str
 
 
 @callback(
     [Output("particle-box-graph", 'figure'),
      Output("show-wf-text", "children"),
      Output("particle-in-a-box-data", "data")],
-    [Input("p-slider", "value"),
+    [Input("p-number", "children"),
      Input("npts-slider", "value"),
      Input("replot-btn", "n_clicks"),
      Input("show-wf", "on")],
     State("particle-in-a-box-data", "data"),
 )
-def display_graph(p, ntry, n_clicks, show_wf, data):
+def display_graph(p_str, ntry, n_clicks, show_wf, data):
     """ This callback produce the plot from the sliders or the replot
     button. """
 
     ctx = callback_context
 
     # params
+    p = int(p_str)
     L = 1
     jitter = .5
 
