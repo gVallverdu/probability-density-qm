@@ -206,6 +206,7 @@ def get_plot(ao_name, points=None, wf=None, ntry=1000, show_sign=False,
     fig.update_layout(
         height=700,
         plot_bgcolor="white",
+        title=f"Atomic orbital {ao_name}",
         xaxis=dict(
             gridcolor="LightGray", range=[-rlim, rlim],
             zeroline=True, zerolinecolor="LightGray", zerolinewidth=2,

@@ -68,7 +68,7 @@ def atomic_orbital_tab():
                         ),
                     ]),
                     html.Div([
-                        html.H4("Sign", style={"padding-left": "10px"}),
+                        html.H4("Wavefunction sign", style={"padding-left": "10px"}),
                         html.Div([
                             daq.BooleanSwitch(id="ao-show-sign", on=False),
                             html.P(id="ao-show-sign-text"),
