@@ -5,7 +5,8 @@ import dash
 from dash import dcc, html
 
 from components import header, footer
-from components import (particle_box_components, ao_radial_components, ao_angular_components, ao_components)
+from components import (particle_box_components, ao_radial_components,
+                        ao_angular_components, ao_components)
 
 # Set up app
 # ------------------------------------------------------------------------------

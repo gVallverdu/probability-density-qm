@@ -4,11 +4,9 @@ from dash import html, dcc, callback, callback_context
 from dash.dependencies import Input, Output, State
 import dash_latex as dl
 import dash_daq as daq
-from matplotlib.pyplot import show
 
 import numpy as np
 from . import atomic_orbitals as ao
-#from .ao_angular import angular_part_equations, angular_part_data, get_polar_plot
 
 """ This module implements the components for the angular probability density tab """
 
