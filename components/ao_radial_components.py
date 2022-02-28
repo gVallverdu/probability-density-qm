@@ -285,8 +285,7 @@ def display_graph(n, l, integrate_click, show_wf, rmin, rmax):
     # switch label
     text = "On" if show_wf else "Off"
 
-    if (rmin is not None and rmax is not None and
-            callback_context.triggered[0]["prop_id"] == "run-integration-btn.n_clicks"):
+    if rmin is not None and rmax is not None:
 
         # display the area
         r = np.linspace(float(rmin), float(rmax), 400)
