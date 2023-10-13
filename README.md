@@ -1,6 +1,6 @@
 # Probability density in Quantum Chemistry
 
-Live demo: https://probability-density-qm.herokuapp.com/
+Live demo on render: [quantum-mechanics-density.onrender.com/](https://quantum-mechanics-density.onrender.com/)
 
 This is a [Dash](https://dash.plotly.com/) application that aims to
 illustrate the link between the wavefunction and the probability density
